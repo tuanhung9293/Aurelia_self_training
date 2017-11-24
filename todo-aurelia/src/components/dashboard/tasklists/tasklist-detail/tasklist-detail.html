@@ -1,0 +1,75 @@
+<template>
+  <require from="./tasklist-detail.css"></require>
+
+  <ux-dialog>
+    <ux-dialog-body>
+      <div class="row">
+        <div class="col-sm-6">
+          <h3>TODOS</h3>
+          <div class="input-group" if.bind="tasklist.is_write">
+            <input type="text" class="form-control" placeholder="Type in a new todo..." value.bind="newtodo"
+                   name="newTodo">
+            <span class="input-group-btn">
+              <button class="btn btn-default"
+                      type="submit" click.delegate="addTodo(newtodo)"
+                      disabled.bind="newtodo==='' || !newtodo">Add Todo </button>
+              </span>
+          </div>
+
+          <div [hidden]="newtodo">
+          </div>
+
+          <div [hidden]="!newtodo">
+            Typing: ${newtodo}
+          </div>
+          <br>
+          <div>
+            <div repeat.for="todo of todos">
+              <div if.bind="!todo.done" style="margin: 1.5%">
+                <button class="btn btn-info btn-xs"
+                        click.delegate="updateTodo(todo.id)"
+                        disabled.bind="!tasklist.is_write">Done
+                </button>
+                <span>&nbsp;${todo.name}</span>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div>
+            <button click.delegate="doneAllTodos()" class="btn btn-primary btn-sm"
+                    disabled.bind="!tasklist.is_write || tasklist.count < 1">Mark all as Done
+            </button>
+          </div>
+        </div><!-- /.col-lg-6 -->
+        <!--<hr class="hidden-sm-up">-->
+        <div class="col-sm-6">
+          <h3>DONE</h3>
+          <div>
+            <div repeat.for="todo of todos">
+              <div if.bind="todo.done" style="margin: 1.5%">
+                <button class="btn btn-warning btn-xs"
+                        click.delegate="deleteTodo(todo.id)"
+                        disabled.bind="!tasklist.is_write">Delete
+                </button>
+                <span>&nbsp;${todo.name}</span>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div>
+            <button click.delegate="deleteAllDones()" class="btn btn-danger btn-sm"
+                    disabled.bind="!tasklist.is_write || tasklist.done < 1">Delete all Done
+            </button>
+          </div>
+
+        </div><!-- /.col-lg-6 -->
+      </div><!-- /.row -->
+    </ux-dialog-body>
+
+    <ux-dialog-footer>
+      <button click.delegate="controller.cancel()">Cancel</button>
+      <button click.delegate="controller.ok(rating)">Ok</button>
+    </ux-dialog-footer>
+  </ux-dialog>
+</template>
+

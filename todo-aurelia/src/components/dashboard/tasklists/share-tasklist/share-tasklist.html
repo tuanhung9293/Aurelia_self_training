@@ -1,0 +1,46 @@
+<template>
+  <require from="./share-tasklist.css"></require>
+
+  <ux-dialog>
+    <ux-dialog-body>
+      <div class="row">
+        <div class="col-xs-12">
+
+          <div class="button-group" style="display:inline-block">
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                    id="control-share">
+              Share All Actions <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li repeat.for="user of users">
+                <div click.delegate="createAuthorizedUser(user.id)">
+                  &nbsp; ${user.email} &nbsp;
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div repeat.for="authen_user of authorizedUsers" style="display:inline-block">
+            <div>
+              <span style="cursor:pointer"
+                    class="label ${authen_user.is_write == true ? 'label-success' : 'label-default'}"
+                    click.delegate="updateAuthorizedUser(authen_user.user_id)">
+                Write
+              </span>
+              <div click.delegate="deleteAuthorizedUser(authen_user.user_id)"
+                   style="display:inline-block; cursor:pointer"
+                   class="${authen_user.is_write == true ? 'text-primary' : 'text-muted'}">&nbsp;${authen_user.user_email}
+              </div>
+              <span>&nbsp;|&nbsp;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ux-dialog-body>
+
+    <ux-dialog-footer>
+      <button click.delegate="controller.cancel()">Cancel</button>
+      <button click.delegate="controller.ok(rating)">Ok</button>
+    </ux-dialog-footer>
+  </ux-dialog>
+</template>
+

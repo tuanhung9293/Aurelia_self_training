@@ -1,0 +1,59 @@
+<template>
+  <require from="./tasklists.css"></require>
+
+  <form submit.trigger="createTasklist(tasklistName.value)">
+    <input type="text"
+           value.bind="tasklistName.value">
+    <button type="submit"
+            class="btn btn-primary btn-sm"
+            disabled.bind="tasklistName.value===''"
+    >Add Tasklist</button>
+  </form>
+
+  <table id="example" class="display" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>List Name</th>
+      <th>User</th>
+      <th>Share</th>
+      <th>Todo</th>
+      <th>Done</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tr if.bind="data.length > 0" repeat.for="item of data">
+      <td>${item.id}</td>
+      <td>${item.name}</td>
+      <td>${item.user}</td>
+      <td>${item.share}</td>
+      <td>${item.count}</td>
+      <td>${item.done}</td>
+      <td class="text-center tl_action">
+        <div if.bind="item.owner" class="action-button">
+          <button click.delegate="edit(item)">
+            <i class="glyphicon glyphicon-pencil"></i>
+          </button>
+          <button click.delegate="deleteTasklist(item.id)">
+            <i class="glyphicon glyphicon-remove"></i>
+          </button>
+          <button click.delegate="share(item)">
+            <i class="glyphicon glyphicon-share-alt"></i>
+          </button>
+          <button click.delegate="showDetail(item)">
+            <i class="glyphicon glyphicon-indent-left"></i>
+          </button>
+        </div>
+
+        <div if.bind="(!item.owner) && (!item.is_write)">
+          <button class="btn btn-xs btn-warning" click.delegate="showDetail(item)">Read&nbsp;&nbsp;Only</button>
+        </div>
+
+        <div if.bind="(!item.owner) && (item.is_write)">
+          <button class="btn btn-xs btn-info" click.delegate="showDetail(item)">Show Detail</button>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</template>

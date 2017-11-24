@@ -1,0 +1,18 @@
+<template>
+  <require from="./edit-tasklist.css"></require>
+
+  <ux-dialog>
+    <ux-dialog-body click.delegate="changeName($event)">
+      <div>
+        <label>name: </label>
+        <input value.bind="rename" value="${tasklist.name}"/>
+      </div>
+    </ux-dialog-body>
+
+    <ux-dialog-footer>
+      <button click.delegate="controller.cancel()">Cancel</button>
+      <button click.delegate="updateTasklist(rename)">Ok</button>
+    </ux-dialog-footer>
+  </ux-dialog>
+</template>
+
