@@ -16,6 +16,7 @@ import * as $ from 'jquery';
 export class TaskLists {
   data: Tasklist[] = [];
   users: User[];
+  tasklistName: string = '';
 
   constructor(private router: Router,
               public dialogService: DialogService,
@@ -53,13 +54,30 @@ export class TaskLists {
           });
 
           this.data.map((item, index) => {
-            this.getAuthorizedUsers(item.id, index)
+            this.getAuthorizedUsers(item.id, index);
+            this.getTodos(item.id, index);
           });
 
           this.getTasklistsAuthorized();
         }
       )
       .catch(() => console.log('getTasklists fail'))
+  }
+
+  getTodos(tasklist_id: number, data_id: number) {
+    this.tasklistService.getTodos(tasklist_id)
+      .then(
+        data => {
+          this.data[data_id].count = 0;
+          data.forEach((item) => {
+            if (!item.done) {
+              this.data[data_id].count++
+            }
+          });
+          this.data[data_id].done = data.length - this.data[data_id].count;
+          console.log('Get todos success');
+        })
+      .catch(error => console.log('Get todos fail'))
   }
 
   getTasklistsAuthorized() {
@@ -101,17 +119,20 @@ export class TaskLists {
       )
   }
 
-  createTasklist(tasklistName: string) {
-    this.tasklistService.createTasklist(tasklistName)
+  createTasklist() {
+    this.tasklistService.createTasklist(this.tasklistName)
       .then(
         response => {
           this.data.push(response);
           this.data[this.data.length - 1].is_write = true;
           this.data[this.data.length - 1].owner = true;
           this.data[this.data.length - 1].share = 0;
+          this.data[this.data.length - 1].count = 0;
+          this.data[this.data.length - 1].done = 0;
           this.data[this.data.length - 1].user = this.userService.getCurrentUser();
           this.data[this.data.length - 1].authorizedUsers = [];
           console.log('Create tasklist success');
+          this.tasklistName = '';
         }
       )
       .catch(() => console.log(`Create tasklist fail`))
@@ -122,7 +143,7 @@ export class TaskLists {
       .then(
         () => {
           this.data = this.data.filter(h => h.id !== id);
-          console.log(`Delete tasklist ${id} success`);
+          alert(`Delete tasklist ${id} success`);
         }
       )
       .catch(() => {

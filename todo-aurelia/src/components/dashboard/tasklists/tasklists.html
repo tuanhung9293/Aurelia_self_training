@@ -1,14 +1,16 @@
 <template>
   <require from="./tasklists.css"></require>
 
-  <form submit.trigger="createTasklist(tasklistName.value)">
+  <form submit.trigger="createTasklist()">
     <input type="text"
-           value.bind="tasklistName.value">
+           value.bind="tasklistName">
     <button type="submit"
             class="btn btn-primary btn-sm"
-            disabled.bind="tasklistName.value===''"
+            disabled.bind="tasklistName===''"
     >Add Tasklist</button>
   </form>
+
+  <hr>
 
   <table id="example" class="display" cellspacing="0" width="100%">
     <thead>

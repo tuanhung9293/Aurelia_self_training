@@ -16,6 +16,7 @@ const mockdata: Todo[] = [
 export class TasklistDetail {
   tasklist: Tasklist;
   todos: Todo[] = [];
+  newTodo: string = '';
 
   constructor(private controller: DialogController,
               private tasklistService: TasklistService) {
@@ -46,14 +47,15 @@ export class TasklistDetail {
       .catch(error => console.log('Get todos fail'))
   }
 
-  addTodo(newtodo: string) {
-    this.tasklistService.addTodo(this.tasklist.id, newtodo)
+  addTodo(newTodo) {
+    this.tasklistService.addTodo(this.tasklist.id, this.newTodo)
       .then(
         () => {
-          console.log(`Add todos ${newtodo} success`);
+          console.log(`Add todos ${this.newTodo} success`);
           this.getTodos();
         })
-      .catch(error => console.log(`Add todos ${newtodo} fail`))
+      .catch(error => console.log(`Add todos ${this.newTodo} fail`))
+    this.newTodo = '';
   }
 
   updateTodo(todo_id: number) {

@@ -1,8 +1,8 @@
 <template>
-  <nav class="navbar navbar-inverse">
+  <nav class="navbar navbar-inverse fix-position">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">WebSiteName</a>
+        <a class="navbar-brand">TODO LISTS</a>
       </div>
       <ul class="nav navbar-nav">
         <li class="active">
@@ -11,14 +11,10 @@
         <li>
           <a route-href="route: profile" class="btn btn-link" id="profile-route">Profile</a>
       </ul>
-      <!--<ul class="nav navbar-nav navbar-right">-->
-        <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
-        <!--<li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>-->
-      <!--</ul>-->
     </div>
   </nav>
 
-  <div class="container">
+  <div class="container data-content">
     <router-view></router-view>
   </div>
 </template>

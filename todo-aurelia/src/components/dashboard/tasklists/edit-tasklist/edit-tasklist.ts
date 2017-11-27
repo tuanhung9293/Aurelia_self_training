@@ -3,8 +3,6 @@ import {DialogController} from 'aurelia-dialog';
 import {User, Tasklist} from '../../../../utils/models';
 import {TasklistService} from '../../../../utils/services/tasklist.service';
 
-const mockCurrentUser: User[] = [{id: 4, email: 'user4@gmail.com', password: ''}];
-
 @inject(DialogController, TasklistService)
 export class EditTasklist {
   tasklist: Tasklist;

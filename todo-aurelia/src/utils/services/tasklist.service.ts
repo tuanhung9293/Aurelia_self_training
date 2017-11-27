@@ -1,6 +1,5 @@
 import {HttpClient, Response, json} from 'aurelia-fetch-client';
 import * as PRODUCT from '../constants';
-
 let currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
 let headers = {
@@ -111,7 +110,7 @@ export class TasklistService {
     })
       .then(
         response => {
-          return response;
+          return response.json();
         })
       .catch(() => console.log('createTasklist got failure'));
   }

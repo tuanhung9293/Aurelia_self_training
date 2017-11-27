@@ -7,20 +7,21 @@
         <div class="col-sm-6">
           <h3>TODOS</h3>
           <div class="input-group" if.bind="tasklist.is_write">
-            <input type="text" class="form-control" placeholder="Type in a new todo..." value.bind="newtodo"
-                   name="newTodo">
-            <span class="input-group-btn">
-              <button class="btn btn-default"
-                      type="submit" click.delegate="addTodo(newtodo)"
-                      disabled.bind="newtodo==='' || !newtodo">Add Todo </button>
-              </span>
+            <form submit.trigger="addTodo(newTodo)">
+              <input type="text"
+                     value.bind="newTodo">
+              <button type="submit"
+                      class="btn btn-primary btn-sm"
+                      disabled.bind="newTodo===''"
+              >Add Todo</button>
+            </form>
           </div>
 
-          <div [hidden]="newtodo">
+          <div [hidden]="newTodo">
           </div>
 
-          <div [hidden]="!newtodo">
-            Typing: ${newtodo}
+          <div [hidden]="!newTodo">
+            Typing: ${newTodo}
           </div>
           <br>
           <div>
