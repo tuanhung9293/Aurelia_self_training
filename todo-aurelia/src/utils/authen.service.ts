@@ -1,47 +1,43 @@
-import {HttpClient, Response, json} from 'aurelia-fetch-client';
+import {HttpClient} from 'aurelia-http-client';
 import * as PRODUCT from './constants';
-
-let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-let headers = {
-  'Content-Type': 'application/json; charset=utf-8',
-  'Uid': 'tuantest1@gmail.com',
-  'Client': 'y6_yWlNILBrklyKMmrI4rQ',
-  'Access-Token': '1OGuHEwZ85_aBqil-NMTJQ'
-};
 
 let httpClient = new HttpClient();
 
 httpClient.configure(config => {
   config
-    .useStandardConfiguration()
     .withBaseUrl(PRODUCT.serverURL)
-    .withDefaults({
-      credentials: 'same-origin',
-      headers: headers
-    })
     .withInterceptor({
-      request(request) {
-        console.log(`Requesting ${request.method} ${request.url}`);
-        return request; // you can return a modified Request, or you can short-circuit the request by returning a Response
+      request(message) {
+        return message;
       },
-      response(response) {
-        console.log(JSON.stringify(response));
-        return response; // you can return a modified Response
+
+      requestError(error) {
+        throw error;
+      },
+
+      response(message) {
+        return message;
+      },
+
+      responseError(error) {
+        throw error;
       }
     });
 });
 
 export class AuthenService {
+  constructor(public defaultData: any, public currentUser: any) {
+    this.defaultData = {'uid': {value: null}, 'client': {value: null}, 'access-token': {value: null}};
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || this.defaultData;
+  }
+
   login(email: string, password: string) {
-    return httpClient.fetch(PRODUCT.userSignInPATH, {
-        method: 'post',
-        body: json({email: email, password: password})
-      }
-    )
-      .then((response: Response) => {
+    return httpClient.post(PRODUCT.userSignInPATH, {email: email, password: password})
+      .then((response) => {
+        localStorage.setItem('currentUser', JSON.stringify(response.headers.headers));
+        localStorage.setItem('authenIsOk', 'true');
+        this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
         return response;
-        this.extractData(response);
       })
       .catch(this.handleError);
   }
@@ -49,6 +45,9 @@ export class AuthenService {
   logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('authenIsOk');
+    // window.location.reload(true);
+    this.currentUser = this.defaultData;
   }
 
   extractData(res: Response) {
@@ -60,5 +59,10 @@ export class AuthenService {
   handleError(error: any): Promise<any> {
     console.error('An error occurred', error); // for demo purposes only
     return Promise.reject(error.message || error);
+  }
+
+  getUserToken() {
+    let data = JSON.parse(localStorage.getItem('currentUser')) || this.defaultData;
+    return data;
   }
 }

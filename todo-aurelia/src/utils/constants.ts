@@ -1,4 +1,4 @@
-export const serverURL = 'https://angular-task-list.herokuapp.com';
+export const serverURL = 'https://herokutuan.herokuapp.com';
 export const tasklistsPATH = '/task_lists';
 export const todosPATH = 'todos';
 

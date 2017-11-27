@@ -1,183 +1,161 @@
-import {HttpClient, Response, json} from 'aurelia-fetch-client';
+import {inject} from 'aurelia-framework';
+import {HttpClient, Response} from 'aurelia-http-client';
 import * as PRODUCT from '../constants';
-let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+import {AuthenService} from '../authen.service';
 
-let headers = {
-  'Content-Type': 'application/json; charset=utf-8',
-  'Uid': 'tuantest1@gmail.com',
-  'Client': 'y6_yWlNILBrklyKMmrI4rQ',
-  'Access-Token': '1OGuHEwZ85_aBqil-NMTJQ'
-};
+// let defaultData = {'uid': {value: null}, 'client': {value: null}, 'access-token': {value: null}};
+// let currentUser = JSON.parse(localStorage.getItem('currentUser')) || defaultData;
 
-let httpClient = new HttpClient();
-
-httpClient.configure(config => {
-  config
-    .useStandardConfiguration()
-    .withBaseUrl(PRODUCT.serverURL)
-    .withDefaults({
-      credentials: 'same-origin',
-      headers: headers
-    })
-    .withInterceptor({
-      request(request) {
-        return request; // you can return a modified Request, or you can short-circuit the request by returning a Response
-      },
-      response(response) {
-        return response; // you can return a modified Response
-      }
-    });
-});
-
+@inject(AuthenService, HttpClient)
 export class TasklistService {
+  constructor(private authenService: AuthenService, private httpClient: HttpClient) {
+    this.httpClient.configure(config => {
+      config
+        .withBaseUrl(PRODUCT.serverURL)
+        .withHeader('Content-Type', 'application/json; charset=utf-8')
+        .withHeader('Uid', this.authenService.getUserToken()['uid'].value)
+        .withHeader('Client', this.authenService.getUserToken()['client'].value)
+        .withHeader('Access-Token', this.authenService.getUserToken()['access-token'].value)
+        .withInterceptor({
+          request(message) {
+            return message;
+          },
+
+          requestError(error) {
+            throw error;
+          },
+
+          response(message) {
+            return message;
+          },
+
+          responseError(error) {
+            throw error;
+          }
+        });
+    });
+  }
 
   getTasklists() {
-    return httpClient.fetch(PRODUCT.tasklistsPATH)
+    return this.httpClient.get(PRODUCT.tasklistsPATH)
       .then(response => {
-        return response.json();
+        return JSON.parse(response.response);
       })
-      .catch(() => console.log('getTasklists got failure'));
+      .catch((error) => console.log('getTasklists got failure', error));
   }
 
   getTasklist(tasklist_id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/`)
+    return this.httpClient.get(`${PRODUCT.tasklistsPATH}/${tasklist_id}/`)
       .then((response) => {
-          return response.json();
-        })
+        return JSON.parse(response.response);
+      })
       .catch(() => console.log('getTasklist got failure'));
   }
 
   getTasklistsAuthorized() {
-    return httpClient.fetch(PRODUCT.tasklistsAuthorizedPATH)
+    return this.httpClient.get(PRODUCT.tasklistsAuthorizedPATH)
       .then(
         response => {
-          return response.json();
+          return JSON.parse(response.response);
         })
       .catch(() => console.log('getTasklistsAuthorized got failure'));
   }
 
   getAuthorizedUsers(tasklist_id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {
+    return this.httpClient.get(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {
       method: 'get',
     })
       .then((response) => {
-          return response.json();
-        })
+        return JSON.parse(response.response);
+      })
       .catch(() => console.log('got failure'));
   }
 
   createAuthorizedUser(tasklist_id: number, user_id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {
-      method: 'post',
-      body: json({user_id: user_id}),
-    })
+    return this.httpClient.post(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {user_id: user_id})
       .then(
         response => {
-          return response.json();
+          return JSON.parse(response.response);
         })
       .catch(() => console.log('got failure'));
   }
 
   updateAuthorizedUser(tasklist_id: number, user_id: number, is_write: boolean) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {
-      method: 'put',
-      body: json({user_id: user_id, is_write: is_write}),
+    return this.httpClient.put(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {
+      user_id: user_id,
+      is_write: is_write
     })
       .then(
         response => {
-          return response.json();
+          return JSON.parse(response.response);
         })
       .catch(() => console.log('got failure'));
   }
 
   deleteAuthorizedUser(tasklist_id: number, user_id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {
-      method: 'delete',
-      body: json({user_id: user_id}),
-    })
+    return this.httpClient.delete(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/${user_id}`)
       .then(
         response => {
-          return response.json();
+          return JSON.parse(response.response);
         })
       .catch(() => console.log('got failure'));
   }
 
   createTasklist(tasklistName: string) {
-    () => console.log('createTasklist', tasklistName)
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}`, {
-      method: 'post',
-      body: json({name: tasklistName}),
-    })
+    return this.httpClient.post(`${PRODUCT.tasklistsPATH}`, {name: tasklistName})
       .then(
         response => {
-          return response.json();
+          return JSON.parse(response.response);
         })
       .catch(() => console.log('createTasklist got failure'));
   }
 
   deleteTasklist(id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${id}/`, {
-      method: 'delete',
-    })
-      .then(
-        response => {
-          console.log(`delete tasklist ${id} success in service`);
-          return response.json();
-        })
-      .catch(() => console.log('got failure'));
+    return this.httpClient.delete(`${PRODUCT.tasklistsPATH}/${id}/`)
+      .then(() => {
+        console.log(`delete tasklist ${id} success in service`);
+      })
+      .catch((error) => console.log('got failure', error));
   }
 
   updateTasklist(tasklist_id: number, tasklist_name: string) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}`, {
-      method: 'put',
-      body: json({name: tasklist_name})
-    })
+    return this.httpClient.put(`${PRODUCT.tasklistsPATH}/${tasklist_id}`, {name: tasklist_name})
       .then(
         response => {
-          return response.json();
+          return JSON.parse(response.response);
         })
       .catch(() => console.log('got failure'));
   }
 
   getTodos(tasklist_id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/`, {
-      method: 'get',
-    })
+    return this.httpClient.get(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/`)
       .then(
         response => {
-          return response.json();
+          return JSON.parse(response.response);
         })
       .catch(() => console.log('got failure'));
   }
 
   addTodo(tasklist_id: number, name: string) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/`, {
-      method: 'post',
-      body: json({name: name})
-    })
+    return this.httpClient.post(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/`, {name: name})
       .then(response => {
-        return response.json();
+        return JSON.parse(response.response);
       })
       .catch(() => console.log('got failure'));
   }
 
   updateTodo(tasklist_id: number, todo_id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/${todo_id}`, {
-      method: 'put',
-      body: json({done: true})
-    })
+    return this.httpClient.put(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/${todo_id}`, {done: true})
       .then(response => {
-        return response.json();
+        return JSON.parse(response.response);
       })
       .catch(() => console.log('got failure'));
   }
 
   deleteTodo(tasklist_id: number, todo_id: number) {
-    return httpClient.fetch(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/${todo_id}`, {
-      method: 'delete',
-    })
+    return this.httpClient.delete(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.todosPATH}/${todo_id}`)
       .then(response => {
-        return response.json();
+        return JSON.parse(response.response);
       })
       .catch(() => console.log('got failure'));
   }

@@ -1,34 +1,36 @@
 import {inject} from 'aurelia-framework';
 import {User, PasswordChange} from './models';
-import {HttpClient, json} from 'aurelia-fetch-client';
+import {HttpClient} from 'aurelia-http-client';
 import {AuthenService} from './authen.service';
 import * as PRODUCT from './constants';
 
-let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-let headers = {
-  'Content-Type': 'application/json; charset=utf-8',
-  'Uid': 'tuantest1@gmail.com',
-  'Client': 'y6_yWlNILBrklyKMmrI4rQ',
-  'Access-Token': '1OGuHEwZ85_aBqil-NMTJQ'
-};
+let defaultData = {'uid': {value: null}, 'client': {value: null}, 'access-token': {value: null}};
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || defaultData;
 
 let httpClient = new HttpClient();
 
 httpClient.configure(config => {
   config
-    .useStandardConfiguration()
     .withBaseUrl(PRODUCT.serverURL)
-    .withDefaults({
-      credentials: 'same-origin',
-      headers: headers
-    })
+    .withHeader('Content-Type', 'application/json; charset=utf-8')
+    .withHeader('Uid', currentUser['uid'].value)
+    .withHeader('Client', currentUser['client'].value)
+    .withHeader('Access-Token', currentUser['access-token'].value)
     .withInterceptor({
-      request(request) {
-        return request; // you can return a modified Request, or you can short-circuit the request by returning a Response
+      request(message) {
+        return message;
       },
-      response(response) {
-        return response; // you can return a modified Response
+
+      requestError(error) {
+        throw error;
+      },
+
+      response(message) {
+        return message;
+      },
+
+      responseError(error) {
+        throw error;
       }
     });
 });
@@ -39,36 +41,31 @@ export class UserService {
   }
 
   createUser(user: User) {
-    return httpClient.fetch(PRODUCT.userCreatePATH, {
-      method: 'post',
-      body: json(user)
-    })
-      .then(response => response.json())
-      .catch(() => console.log('got failure'));
+    return httpClient.post(PRODUCT.userCreatePATH, user)
+      .then(response => {
+        return JSON.parse(response.response);
+      })
+      .catch((error) => console.log('got failure', error));
   }
 
   changePassword(changepassword: PasswordChange) {
-    return httpClient.fetch(PRODUCT.userPasswordPATH, {
-        method: 'put',
-        body: json(changepassword)
-      }
-    )
-      .then(response => response.json())
-      .catch(() => console.log('got failure'));
+    return httpClient.put(PRODUCT.userPasswordPATH, changepassword)
+      .then(response => {
+        return JSON.parse(response.response);
+      })
+      .catch((error) => console.log('got failure', error));
   }
 
   getUsers() {
-    return httpClient.fetch(PRODUCT.getUsersPATH, {
-        method: 'get'
-      }
-    )
-      .then(response => response.json())
-      .catch(() => console.log('got failure'));
+    return httpClient.get(PRODUCT.getUsersPATH)
+      .then(response => {
+        return JSON.parse(response.response);
+      })
+      .catch((error) => console.log('got failure', error));
   }
 
   getCurrentUser() {
-    // let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    // return currentUser.headers['Uid'];
-    return 'tuantest1@gmail.com'
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    return currentUser['uid'].value;
   }
 }

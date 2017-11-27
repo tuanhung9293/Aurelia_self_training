@@ -12,7 +12,7 @@ export class Profile {
   }
 
   created() {
-    this.current_user = 'tuantest1@gmail.com';
+    this.current_user = this.userService.getCurrentUser();
   }
 
   changePassword() {

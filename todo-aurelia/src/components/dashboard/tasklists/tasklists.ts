@@ -61,7 +61,7 @@ export class TaskLists {
           this.getTasklistsAuthorized();
         }
       )
-      .catch(() => console.log('getTasklists fail'))
+      .catch((error) => console.log('getTasklists fail', error))
   }
 
   getTodos(tasklist_id: number, data_id: number) {
@@ -140,15 +140,13 @@ export class TaskLists {
 
   deleteTasklist(id: number): void {
     this.tasklistService.deleteTasklist(id)
-      .then(
-        () => {
+      .then(() => {
           this.data = this.data.filter(h => h.id !== id);
-          alert(`Delete tasklist ${id} success`);
+          // alert(`Delete tasklist ${id} success`);
         }
       )
-      .catch(() => {
-        console.log(`Delete tasklist ${id} fail`);
-        this.data = this.data.filter(h => h.id !== id);
+      .catch((error) => {
+        console.log(`Delete tasklist ${id} fail`, error);
       })
   }
 

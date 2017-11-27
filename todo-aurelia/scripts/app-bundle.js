@@ -1,1 +1,1094 @@
-define("app",["require","exports","aurelia-router"],function(e,t,o){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var n=function(){function e(){}return e.prototype.configureRouter=function(e,t){e.title="Login",e.addAuthorizeStep(i),e.map([{route:"login",moduleId:"components/login/login",nav:!0,name:"login",title:"Login",settings:{roles:[]}},{route:"register",moduleId:"components/register/register",nav:!0,name:"register",title:"Register",settings:{roles:[]}},{route:"dashboard",moduleId:"components/dashboard/dashboard",nav:!0,name:"dashboard",title:"Dashboard",settings:{roles:["admin"]}},{route:"",redirect:"login"}]),this.router=t},e}();t.App=n;var i=function(){function e(){}return e.prototype.run=function(e,t){if(e.getAllInstructions().some(function(e){return-1!==e.config.settings.roles.indexOf("admin")}));return t()},e}()}),define("environment",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default={debug:!1,testing:!1}}),define("main",["require","exports","./environment","aurelia-pal"],function(e,t,o,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.configure=function(e){e.use.standardConfiguration().feature("resources"),e.use.standardConfiguration().plugin("datatables"),e.use.standardConfiguration().developmentLogging().plugin(n.PLATFORM.moduleName("aurelia-dialog")),o.default.debug&&e.use.developmentLogging(),o.default.testing&&e.use.plugin("aurelia-testing"),e.start().then(function(){return e.setRoot()})}}),define("resources/index",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.configure=function(e){}}),define("utils/authen.service",["require","exports","aurelia-fetch-client","./constants"],function(e,t,o,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});JSON.parse(localStorage.getItem("currentUser"));var i={"Content-Type":"application/json; charset=utf-8",Uid:"tuantest1@gmail.com",Client:"y6_yWlNILBrklyKMmrI4rQ","Access-Token":"1OGuHEwZ85_aBqil-NMTJQ"},r=new o.HttpClient;r.configure(function(e){e.useStandardConfiguration().withBaseUrl(n.serverURL).withDefaults({credentials:"same-origin",headers:i}).withInterceptor({request:function(e){return console.log("Requesting "+e.method+" "+e.url),e},response:function(e){return console.log(JSON.stringify(e)),e}})});var s=function(){function e(){}return e.prototype.login=function(e,t){return r.fetch(n.userSignInPATH,{method:"post",body:o.json({email:e,password:t})}).then(function(e){return e}).catch(this.handleError)},e.prototype.logout=function(){localStorage.removeItem("currentUser")},e.prototype.extractData=function(e){if(e.status<200||e.status>=300)throw new Error("Bad response status: "+e.status)},e.prototype.handleError=function(e){return console.error("An error occurred",e),Promise.reject(e.message||e)},e}();t.AuthenService=s}),define("utils/constants",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.serverURL="https://angular-task-list.herokuapp.com",t.tasklistsPATH="/task_lists",t.todosPATH="todos",t.userCreatePATH="/auth",t.userPasswordPATH="/auth/password",t.userSignInPATH="/auth/sign_in",t.getUsersPATH="/users",t.searchTodoPATH="/search",t.sharePATH="/share",t.tasklistsAuthorizedPATH="/shared"});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("utils/user.service",["require","exports","aurelia-framework","aurelia-fetch-client","./authen.service","./constants"],function(e,t,o,n,i,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});JSON.parse(localStorage.getItem("currentUser"));var s={"Content-Type":"application/json; charset=utf-8",Uid:"tuantest1@gmail.com",Client:"y6_yWlNILBrklyKMmrI4rQ","Access-Token":"1OGuHEwZ85_aBqil-NMTJQ"},a=new n.HttpClient;a.configure(function(e){e.useStandardConfiguration().withBaseUrl(r.serverURL).withDefaults({credentials:"same-origin",headers:s}).withInterceptor({request:function(e){return e},response:function(e){return e}})});var l=function(){function e(e){this.authenService=e}return e.prototype.createUser=function(e){return a.fetch(r.userCreatePATH,{method:"post",body:n.json(e)}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.changePassword=function(e){return a.fetch(r.userPasswordPATH,{method:"put",body:n.json(e)}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.getUsers=function(){return a.fetch(r.getUsersPATH,{method:"get"}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.getCurrentUser=function(){return"tuantest1@gmail.com"},e=__decorate([o.inject(i.AuthenService),__metadata("design:paramtypes",[i.AuthenService])],e)}();t.UserService=l});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("components/login/login",["require","exports","../../utils/authen.service","aurelia-router","aurelia-framework"],function(e,t,o,n,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=function(){function e(e,t){this.router=e,this.authenService=t,this.userLogin={},this.loading=!1}return e.prototype.created=function(){this.authenService.logout()},e.prototype.login=function(){var e=this;this.loading=!0,this.authenService.login(this.userLogin.email,this.userLogin.password).then(function(t){e.router.navigate("dashboard")})},e=__decorate([i.inject(n.Router,o.AuthenService),__metadata("design:paramtypes",[n.Router,o.AuthenService])],e)}();t.Login=r}),define("components/dashboard/dashboard",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=function(){function e(){}return e.prototype.configureRouter=function(e,t){e.title="Dashboard",e.map([{route:"tasklists",moduleId:"components/dashboard/tasklists/tasklists",nav:!0,name:"tasklists",title:"Tasklists"},{route:"profile",moduleId:"components/dashboard/profile/profile",nav:!0,name:"profile",title:"Profile"},{route:"",redirect:"tasklists"}]),this.router=t},e}();t.DashBoard=o});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("components/register/register",["require","exports","../../utils/user.service","aurelia-router","aurelia-framework"],function(e,t,o,n,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=function(){function e(e,t){this.router=e,this.userService=t,this.userRegister={},this.loading=!1}return e.prototype.register=function(){var e=this;this.loading=!0,this.userService.createUser(this.userRegister).then(function(){alert("Register successfully, please Login."),e.router.navigate("login")}).catch(function(){return alert("Register got failure!")})},e=__decorate([i.inject(n.Router,o.UserService),__metadata("design:paramtypes",[n.Router,o.UserService])],e)}();t.Register=r}),define("utils/models/authen",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=function(){return function(){}}();t.Authen=o}),define("utils/models/index",["require","exports","./user","./tasklist","./password-change","./todo","./authen","./todo-search"],function(e,t,o,n,i,r,s,a){"use strict";function l(e){for(var o in e)t.hasOwnProperty(o)||(t[o]=e[o])}Object.defineProperty(t,"__esModule",{value:!0}),l(o),l(n),l(i),l(r),l(s),l(a)}),define("utils/models/password-change",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=function(){return function(){}}();t.PasswordChange=o}),define("utils/models/tasklist",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=function(){return function(){}}();t.Tasklist=o}),define("utils/models/todo-search",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=function(){return function(){}}();t.TodoSearch=o}),define("utils/models/todo",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=function(){return function(){}}();t.Todo=o}),define("utils/models/user",["require","exports"],function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=function(){return function(){}}();t.User=o}),define("utils/services/tasklist.service",["require","exports","aurelia-fetch-client","../constants"],function(e,t,o,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});JSON.parse(localStorage.getItem("currentUser"));var i={"Content-Type":"application/json; charset=utf-8",Uid:"tuantest1@gmail.com",Client:"y6_yWlNILBrklyKMmrI4rQ","Access-Token":"1OGuHEwZ85_aBqil-NMTJQ"},r=new o.HttpClient;r.configure(function(e){e.useStandardConfiguration().withBaseUrl(n.serverURL).withDefaults({credentials:"same-origin",headers:i}).withInterceptor({request:function(e){return e},response:function(e){return e}})});var s=function(){function e(){}return e.prototype.getTasklists=function(){return r.fetch(n.tasklistsPATH).then(function(e){return e.json()}).catch(function(){return console.log("getTasklists got failure")})},e.prototype.getTasklist=function(e){return r.fetch(n.tasklistsPATH+"/"+e+"/").then(function(e){return e.json()}).catch(function(){return console.log("getTasklist got failure")})},e.prototype.getTasklistsAuthorized=function(){return r.fetch(n.tasklistsAuthorizedPATH).then(function(e){return e.json()}).catch(function(){return console.log("getTasklistsAuthorized got failure")})},e.prototype.getAuthorizedUsers=function(e){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.sharePATH+"/",{method:"get"}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.createAuthorizedUser=function(e,t){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.sharePATH+"/",{method:"post",body:o.json({user_id:t})}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.updateAuthorizedUser=function(e,t,i){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.sharePATH+"/",{method:"put",body:o.json({user_id:t,is_write:i})}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.deleteAuthorizedUser=function(e,t){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.sharePATH+"/",{method:"delete",body:o.json({user_id:t})}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.createTasklist=function(e){return r.fetch(""+n.tasklistsPATH,{method:"post",body:o.json({name:e})}).then(function(e){return e.json()}).catch(function(){return console.log("createTasklist got failure")})},e.prototype.deleteTasklist=function(e){return r.fetch(n.tasklistsPATH+"/"+e+"/",{method:"delete"}).then(function(t){return console.log("delete tasklist "+e+" success in service"),t.json()}).catch(function(){return console.log("got failure")})},e.prototype.updateTasklist=function(e,t){return r.fetch(n.tasklistsPATH+"/"+e,{method:"put",body:o.json({name:t})}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.getTodos=function(e){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.todosPATH+"/",{method:"get"}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.addTodo=function(e,t){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.todosPATH+"/",{method:"post",body:o.json({name:t})}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.updateTodo=function(e,t){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.todosPATH+"/"+t,{method:"put",body:o.json({done:!0})}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.deleteTodo=function(e,t){return r.fetch(n.tasklistsPATH+"/"+e+"/"+n.todosPATH+"/"+t,{method:"delete"}).then(function(e){return e.json()}).catch(function(){return console.log("got failure")})},e.prototype.extractData=function(e){if(e.status<200||e.status>=300)throw new Error("Bad response status: "+e.status)},e.prototype.handleError=function(e){return console.error("An error occurred",e),Promise.reject(e.message||e)},e}();t.TasklistService=s});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("components/dashboard/profile/profile",["require","exports","aurelia-framework","../../../utils/user.service","aurelia-router"],function(e,t,o,n,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=function(){function e(e,t){this.router=e,this.userService=t,this.newPassword={}}return e.prototype.created=function(){this.current_user="tuantest1@gmail.com"},e.prototype.changePassword=function(){var e=this;this.userService.changePassword(this.newPassword).then(function(t){e.router.navigate("/"),alert("Change password success")}).catch(function(){alert("Change password fail")})},e=__decorate([o.inject(i.Router,n.UserService),__metadata("design:paramtypes",[i.Router,n.UserService])],e)}();t.Profile=r});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("components/dashboard/tasklists/tasklists",["require","exports","aurelia-router","../../../utils/services/tasklist.service","../../../utils/user.service","aurelia-framework","aurelia-dialog","./tasklist-detail/tasklist-detail","./share-tasklist/share-tasklist","./edit-tasklist/edit-tasklist","jquery"],function(e,t,o,n,i,r,s,a,l,c,u){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var d=function(){function e(e,t,o,n){this.router=e,this.dialogService=t,this.tasklistService=o,this.userService=n,this.data=[],this.tasklistName=""}return e.prototype.renderDatatable=function(){u("#example").dataTable({lengthMenu:[[10,25,50,-1],[10,25,50,"All"]]})},e.prototype.created=function(){this.getTasklists(),this.getUsers()},e.prototype.getUsers=function(){var e=this;this.userService.getUsers().then(function(t){return e.users=t}).catch(function(){return console.log("getUsers fail")})},e.prototype.getTasklists=function(){var e=this;this.tasklistService.getTasklists().then(function(t){e.data=t,console.log("Get tasklists success"),e.data.forEach(function(t){t.owner=!0,t.is_write=!0,t.user=e.userService.getCurrentUser()}),e.data.map(function(t,o){e.getAuthorizedUsers(t.id,o),e.getTodos(t.id,o)}),e.getTasklistsAuthorized()}).catch(function(){return console.log("getTasklists fail")})},e.prototype.getTodos=function(e,t){var o=this;this.tasklistService.getTodos(e).then(function(e){o.data[t].count=0,e.forEach(function(e){e.done||o.data[t].count++}),o.data[t].done=e.length-o.data[t].count,console.log("Get todos success")}).catch(function(e){return console.log("Get todos fail")})},e.prototype.getTasklistsAuthorized=function(){var e=this;this.tasklistService.getTasklistsAuthorized().then(function(t){t.forEach(function(t){t.user=e.users.filter(function(e){return e.id===t.user_id})[0].email}),e.data=e.data.concat(t),console.log("getTasklistsAuthorized success")}).then(function(){return e.renderDatatable()}).catch(function(){return console.log("getTasklistsAuthorized fail")})},e.prototype.getAuthorizedUsers=function(e,t){var o=this;this.tasklistService.getAuthorizedUsers(e).then(function(e){o.data[t].share=e.length,o.data[t].authorizedUsers=e,console.log("Get who authed tasklists success")}).catch(function(){return console.log("getAuthorizedUsers fail")})},e.prototype.getTasklist=function(e){var t=this;this.tasklistService.getTasklist(e).then(function(o){t.data.filter(function(t){return t.id===e})[0].name=o.name,console.log("Get tasklist "+e+" success")}).catch(function(){return console.log("Get tasklist "+e+" fail")})},e.prototype.createTasklist=function(){var e=this;this.tasklistService.createTasklist(this.tasklistName).then(function(t){e.data.push(t),e.data[e.data.length-1].is_write=!0,e.data[e.data.length-1].owner=!0,e.data[e.data.length-1].share=0,e.data[e.data.length-1].count=0,e.data[e.data.length-1].done=0,e.data[e.data.length-1].user=e.userService.getCurrentUser(),e.data[e.data.length-1].authorizedUsers=[],console.log("Create tasklist success"),e.tasklistName=""}).catch(function(){return console.log("Create tasklist fail")})},e.prototype.deleteTasklist=function(e){var t=this;this.tasklistService.deleteTasklist(e).then(function(){t.data=t.data.filter(function(t){return t.id!==e}),alert("Delete tasklist "+e+" success")}).catch(function(){console.log("Delete tasklist "+e+" fail"),t.data=t.data.filter(function(t){return t.id!==e})})},e.prototype.showDetail=function(e){this.dialogService.open({viewModel:a.TasklistDetail,model:e}).whenClosed(function(e){e.wasCancelled?console.log("Cancel"):console.log("OK"),console.log(e.output)})},e.prototype.share=function(e){this.dialogService.open({viewModel:l.ShareTasklist,model:e}).whenClosed(function(e){e.wasCancelled?console.log("Cancel"):console.log("OK"),console.log(e.output)})},e.prototype.edit=function(e){this.dialogService.open({viewModel:c.EditTasklist,model:e}).whenClosed(function(t){t.wasCancelled?console.log("Cancel"):(e.name=t.output,console.log("OK")),console.log(t.output)})},e=__decorate([r.inject(o.Router,s.DialogService,n.TasklistService,i.UserService),__metadata("design:paramtypes",[o.Router,s.DialogService,n.TasklistService,i.UserService])],e)}();t.TaskLists=d});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("components/dashboard/tasklists/edit-tasklist/edit-tasklist",["require","exports","aurelia-framework","aurelia-dialog","../../../../utils/services/tasklist.service"],function(e,t,o,n,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=function(){function e(e,t){this.controller=e,this.tasklistService=t}return e.prototype.activate=function(e){this.rename=e.name,this.tasklist=e},e.prototype.updateTasklist=function(e){var t=this;this.tasklistService.updateTasklist(this.tasklist.id,e).then(function(){return console.log("Rename tasklist success")}).then(function(){return t.controller.ok(e)}).catch(function(){console.log("Rename tasklist fail")})},e.prototype.changeName=function(e){e.target.dataset.name&&(this.rename=e.target.dataset.name)},e=__decorate([o.inject(n.DialogController,i.TasklistService),__metadata("design:paramtypes",[n.DialogController,i.TasklistService])],e)}();t.EditTasklist=r});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("components/dashboard/tasklists/share-tasklist/share-tasklist",["require","exports","aurelia-framework","aurelia-dialog","../../../../utils/user.service","../../../../utils/services/tasklist.service"],function(e,t,o,n,i,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var s=function(){function e(e,t,o){this.controller=e,this.userService=t,this.tasklistService=o,this.user=[]}return e.prototype.activate=function(e){this.tasklist=e,this.authorizedUsers=this.tasklist.authorizedUsers},e.prototype.created=function(){this.getUsers(),console.log(this.authorizedUsers)},e.prototype.getUsers=function(){var e=this;this.userService.getUsers().then(function(t){e.users=t,console.log("Get users success"),e.users=e.users.filter(function(t){return t.email!==e.userService.getCurrentUser()[0]}),e.authorizedUsers&&e.authorizedUsers.forEach(function(t){t.user_email=e.users.filter(function(e){return e.id===t.user_id})[0].email,e.users=e.users.filter(function(e){return e.id!==t.user_id})})}).catch(function(e){return console.log("Get users fail")})},e.prototype.createAuthorizedUser=function(e){var t=this;this.tasklistService.createAuthorizedUser(this.tasklist.id,e).then(function(o){t.authorizedUsers.push(o);var n=t.users.filter(function(e){return e.id===o.user_id})[0].email;t.authorizedUsers[t.authorizedUsers.length-1].user_email=n,console.log("Create Authen users success"),t.tasklist.share++,t.users=t.users.filter(function(t){return t.id!==e})}).catch(function(e){return console.log("Create Authen users fail")})},e.prototype.deleteAuthorizedUser=function(e){var t=this;this.tasklistService.deleteAuthorizedUser(this.tasklist.id,e).then(function(o){var n=t.authorizedUsers.filter(function(t){return t.user_id===e})[0].user_email;t.users.push({id:e,email:n,password:""}),t.authorizedUsers=t.authorizedUsers.filter(function(t){return t.user_id!==e}),console.log("Delete Authen users success"),t.tasklist.share--}).catch(function(e){return console.log("Delete Authen users fail")})},e.prototype.updateAuthorizedUser=function(e){var t=this.authorizedUsers.filter(function(t){return t.user_id===e})[0];this.tasklistService.updateAuthorizedUser(this.tasklist.id,e,!t.is_write).then(function(e){console.log(t),t.is_write=e.is_write,console.log("Update Authen users success")}).catch(function(e){return console.log("Update Authen users fail")})},e=__decorate([o.inject(n.DialogController,i.UserService,r.TasklistService),__metadata("design:paramtypes",[n.DialogController,i.UserService,r.TasklistService])],e)}();t.ShareTasklist=s});var __decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,o,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(s=(r<3?i(s):r>3?i(t,o,s):i(t,o))||s);return r>3&&s&&Object.defineProperty(t,o,s),s},__metadata=this&&this.__metadata||function(e,t){if("object"==typeof Reflect&&"function"==typeof Reflect.metadata)return Reflect.metadata(e,t)};define("components/dashboard/tasklists/tasklist-detail/tasklist-detail",["require","exports","aurelia-framework","aurelia-dialog","../../../../utils/services/tasklist.service"],function(e,t,o,n,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=function(){function e(e,t){this.controller=e,this.tasklistService=t,this.todos=[],this.newTodo=""}return e.prototype.activate=function(e){this.tasklist=e},e.prototype.created=function(){this.getTodos()},e.prototype.getTodos=function(){var e=this;this.tasklistService.getTodos(this.tasklist.id).then(function(t){e.todos=t,e.tasklist.count=0,t.forEach(function(t){t.done||e.tasklist.count++}),e.tasklist.done=t.length-e.tasklist.count,console.log("Get todos success")}).catch(function(e){return console.log("Get todos fail")})},e.prototype.addTodo=function(e){var t=this;this.tasklistService.addTodo(this.tasklist.id,this.newTodo).then(function(){console.log("Add todos "+t.newTodo+" success"),t.getTodos()}).catch(function(e){return console.log("Add todos "+t.newTodo+" fail")}),this.newTodo=""},e.prototype.updateTodo=function(e){var t=this;this.tasklistService.updateTodo(this.tasklist.id,e).then(function(o){console.log("Done todo "+e+" success"),t.getTodos()}).catch(function(t){return console.log("Done todo "+e+" fail")})},e.prototype.deleteTodo=function(e){var t=this;this.tasklistService.deleteTodo(this.tasklist.id,e).then(function(o){console.log("Delete todo "+e+" success"),t.getTodos()}).catch(function(o){console.log("Delete todo "+e+" fail"),t.getTodos()})},e.prototype.doneAllTodos=function(){var e=this;this.todos.forEach(function(t){t.done||e.updateTodo(t.id)}),console.log("Done all todos")},e.prototype.deleteAllDones=function(){var e=this;this.todos.forEach(function(t){t.done&&e.deleteTodo(t.id)}),console.log("Delete all dones")},e=__decorate([o.inject(n.DialogController,i.TasklistService),__metadata("design:paramtypes",[n.DialogController,i.TasklistService])],e)}();t.TasklistDetail=r}),define("text!app.html",["module"],function(e){e.exports="<template><div><router-view></router-view></div></template>"}),define("text!components/dashboard/dashboard.html",["module"],function(e){e.exports='<template><nav class="navbar navbar-inverse fix-position"><div class="container-fluid"><div class="navbar-header"><a class="navbar-brand">TODO LISTS</a></div><ul class="nav navbar-nav"><li class="active"><a route-href="route: tasklists" class="btn btn-link" id="tasklists-route">Tasklists</a></li><li><a route-href="route: profile" class="btn btn-link" id="profile-route">Profile</a></li></ul></div></nav><div class="container data-content"><router-view></router-view></div></template>'}),define("text!components/dashboard/profile/profile.css",["module"],function(e){e.exports=""}),define("text!components/login/login.html",["module"],function(e){e.exports='<template><div class="col-md-6 col-md-offset-3"><h2>Login</h2><form name="form" submit.delegate="login()"><div class="form-group"><label>Email</label><input type="email" class="form-control" name="password" value.bind="userLogin.email"></div><div class="form-group"><label>Password</label><input type="password" class="form-control" name="password" value.bind="userLogin.password"></div><div class="form-group"><button class="btn btn-primary" type="submit">Login</button> <a route-href="route: register" class="btn btn-link" id="register-route">Register</a></div></form></div></template>'}),define("text!components/dashboard/tasklists/tasklists.css",["module"],function(e){e.exports="#client-side-demo-container {\n  padding: 30px;\n  background-color: white;\n}\n#client-side-demo-container .loader {\n  position: absolute;\n  background-color: rgba(174, 176, 178, 0.2);\n  z-index: 9999;\n  width: 100%;\n  height: 100%;\n}\n#client-side-demo-container .loader i {\n  font-size: 25pt;\n  color: #333;\n  position: absolute;\n  width: unset;\n  top: 40%;\n  left: 47%;\n}\n#client-side-demo-container .content {\n  padding: 0;\n}\n#client-side-demo-container .filter-button {\n  padding: 0;\n  background-color: #ed682f;\n  color: white;\n  opacity: .8;\n  border-radius: 0;\n}\n#client-side-demo-container .nav .nav-item {\n  width: 25%;\n  text-align: center;\n  border: 1px #ed682f solid;\n  opacity: .8;\n}\n#client-side-demo-container .nav .nav-item .nav-link {\n  color: #ed682f;\n  text-transform: uppercase;\n}\n#client-side-demo-container .nav .nav-item .nav-link.active {\n  border-radius: 0;\n  background-color: #ed682f;\n  color: white;\n}\n#client-side-demo-container img {\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n}\n#client-side-demo-container .btn-primary {\n  background-color: #333;\n  color: white;\n  border-color: #333;\n  border-radius: 0px;\n}\n#client-side-demo-container .header {\n  padding: 10px;\n  border-top: 1px solid #e9ecef;\n  border-left: 1px solid #e9ecef;\n  border-right: 1px solid #e9ecef;\n}\n#client-side-demo-container .header h6 {\n  margin-top: 10px;\n  margin-left: 10px;\n}\n#client-side-demo-container .form-control {\n  border-radius: 0;\n  outline: none;\n}\n#client-side-demo-container .descending {\n  margin-left: -7px !important;\n}\n#client-side-demo-container select.form-control {\n  width: 100%;\n  height: 38px;\n  -webkit-appearance: none;\n  font-size: 9pt;\n  -moz-appearance: none;\n  background: url(data:image/svg+xml;utf8,) #fff;\n  background-position: 98% 50%;\n  background-repeat: no-repeat;\n  border-radius: 0;\n  border: 1px solid rgba(0, 0, 0, 0.15);\n  padding: 2px 0 0 10px;\n}\n#client-side-demo-container table {\n  margin: 0;\n}\n#client-side-demo-container table thead .au-table-filter .btn-primary {\n  padding: 1px 6px 2px 6px;\n  border-radius: 0;\n}\n#client-side-demo-container table tbody tr.selected {\n  background-color: #333 !important;\n  color: white !important;\n}\n#client-side-demo-container table tbody tr td:first-child {\n  text-align: center;\n}\n#client-side-demo-container table tbody tr:hover {\n  background-color: #333;\n  color: white !important;\n  cursor: pointer;\n}\n#client-side-demo-container table tbody tr td {\n  vertical-align: middle;\n}\n#client-side-demo-container .footer {\n  padding: 10px 10px;\n  height: 55px;\n  border-left: 1px solid #e9ecef;\n  border-right: 1px solid #e9ecef;\n  border-bottom: 1px solid #e9ecef;\n}\n#client-side-demo-container .footer .col-md-6 {\n  padding: 0;\n}\n#client-side-demo-container .footer .au-table-info {\n  margin-top: 8px;\n  margin-left: 10px;\n}\n#client-side-demo-container .footer .info {\n  margin-top: 0px;\n  display: inline-block;\n}\n#client-side-demo-container .footer nav ul {\n  margin: 0;\n}\n#client-side-demo-container .footer nav ul li a {\n  border-radius: 0px;\n  color: #333;\n}\n#client-side-demo-container .footer nav ul li:hover {\n  cursor: pointer;\n}\n#client-side-demo-container .footer nav ul li.dots {\n  cursor: none !important;\n}\n#client-side-demo-container .footer nav ul li.active a {\n  background-color: #333;\n  border-color: #333;\n  color: white;\n}\n#client-side-demo-container .footer nav ul li.dots {\n  cursor: default !important;\n}\n#client-side-demo-container .footer nav ul li.dots a:hover {\n  background: white !important;\n}\n#client-side-demo-container .nav-tabs {\n  margin-top: 50px;\n}\n\n.glyphicon {\n  font-size: 12px;\n}\n\n.action-button {\n  display: inline-flex;\n}\n\nux-dialog-overlay.active {\n  background-color: black;\n  opacity: .65;\n}\n\nux-dialog-container>div>div {\nwidth: 60%;\n}\n\nux-dialog {\n  width: 100%;\n}\n"}),define("text!components/register/register.html",["module"],function(e){e.exports='<template><div class="col-md-6 col-md-offset-3"><h2>Register</h2><form name="form" submit.delegate="register()"><div class="form-group"><label>Email</label><input type="email" class="form-control" name="password" value.bind="userRegister.email"></div><div class="form-group"><label>Password</label><input type="password" class="form-control" name="password" value.bind="userRegister.password"></div><div class="form-group"><button class="btn btn-primary" type="submit">Register</button> <a route-href="route: login" class="btn btn-link" id="login-route">Cancel</a></div></form></div></template>'}),define("text!components/dashboard/tasklists/edit-tasklist/edit-tasklist.css",["module"],function(e){e.exports="/*ux-dialog-container>div>div {*/\n  /*width: 60%;*/\n/*}*/\n"}),define("text!components/dashboard/profile/profile.html",["module"],function(e){e.exports='<template><div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2"><h3>Welcome ${current_user}</h3><button class="btn btn-warning"><a route-href="route: login" id="tasklists-route">Logout</a></button><br><h3>Change Password</h3><form name="form" submit.delegate="changePassword()"><div class="form-group"><label>Email</label><input type="email" class="form-control" name="password" value.bind="userLogin.email"></div><div class="form-group"><label>Password</label><input type="password" class="form-control" name="password" value.bind="userLogin.password"></div><div class="form-group"><button class="btn btn-primary" type="submit">Change Password</button></div></form></div></template>'}),define("text!components/dashboard/tasklists/share-tasklist/share-tasklist.css",["module"],function(e){e.exports=""}),define("text!components/dashboard/tasklists/tasklists.html",["module"],function(e){e.exports='<template><require from="./tasklists.css"></require><form submit.trigger="createTasklist()"><input type="text" value.bind="tasklistName"> <button type="submit" class="btn btn-primary btn-sm" disabled.bind="tasklistName===\'\'">Add Tasklist</button></form><hr><table id="example" class="display" cellspacing="0" width="100%"><thead><tr><th>ID</th><th>List Name</th><th>User</th><th>Share</th><th>Todo</th><th>Done</th><th>Action</th></tr></thead><tr if.bind="data.length > 0" repeat.for="item of data"><td>${item.id}</td><td>${item.name}</td><td>${item.user}</td><td>${item.share}</td><td>${item.count}</td><td>${item.done}</td><td class="text-center tl_action"><div if.bind="item.owner" class="action-button"><button click.delegate="edit(item)"><i class="glyphicon glyphicon-pencil"></i></button> <button click.delegate="deleteTasklist(item.id)"><i class="glyphicon glyphicon-remove"></i></button> <button click.delegate="share(item)"><i class="glyphicon glyphicon-share-alt"></i></button> <button click.delegate="showDetail(item)"><i class="glyphicon glyphicon-indent-left"></i></button></div><div if.bind="(!item.owner) && (!item.is_write)"><button class="btn btn-xs btn-warning" click.delegate="showDetail(item)">Read&nbsp;&nbsp;Only</button></div><div if.bind="(!item.owner) && (item.is_write)"><button class="btn btn-xs btn-info" click.delegate="showDetail(item)">Show Detail</button></div></td></tr></table></template>'}),define("text!components/dashboard/tasklists/tasklist-detail/tasklist-detail.css",["module"],function(e){e.exports="ux-dialog-overlay.active {\n  background-color: black;\n  opacity: .65;\n}\n\n/*ux-dialog {*/\n  /*min-width: 600px;*/\n/*}*/\n"}),define("text!components/dashboard/tasklists/edit-tasklist/edit-tasklist.html",["module"],function(e){e.exports='<template><require from="./edit-tasklist.css"></require><ux-dialog><ux-dialog-body click.delegate="changeName($event)"><div><label>name:</label><input value.bind="rename" value="${tasklist.name}"></div></ux-dialog-body><ux-dialog-footer><button click.delegate="controller.cancel()">Cancel</button> <button click.delegate="updateTasklist(rename)">Ok</button></ux-dialog-footer></ux-dialog></template>'}),define("text!components/dashboard/tasklists/share-tasklist/share-tasklist.html",["module"],function(e){e.exports='<template><require from="./share-tasklist.css"></require><ux-dialog><ux-dialog-body><div class="row"><div class="col-xs-12"><div class="button-group" style="display:inline-block"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" id="control-share">Share All Actions <span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button><ul class="dropdown-menu"><li repeat.for="user of users"><div click.delegate="createAuthorizedUser(user.id)">&nbsp; ${user.email} &nbsp;</div></li></ul></div><div repeat.for="authen_user of authorizedUsers" style="display:inline-block"><div><span style="cursor:pointer" class="label ${authen_user.is_write == true ? \'label-success\' : \'label-default\'}" click.delegate="updateAuthorizedUser(authen_user.user_id)">Write</span><div click.delegate="deleteAuthorizedUser(authen_user.user_id)" style="display:inline-block;cursor:pointer" class="${authen_user.is_write == true ? \'text-primary\' : \'text-muted\'}">&nbsp;${authen_user.user_email} </div><span>&nbsp;|&nbsp;</span></div></div></div></div></ux-dialog-body><ux-dialog-footer><button click.delegate="controller.cancel()">Cancel</button> <button click.delegate="controller.ok(rating)">Ok</button></ux-dialog-footer></ux-dialog></template>'}),define("text!components/dashboard/tasklists/tasklist-detail/tasklist-detail.html",["module"],function(e){e.exports='<template><require from="./tasklist-detail.css"></require><ux-dialog><ux-dialog-body><div class="row"><div class="col-sm-6"><h3>TODOS</h3><div class="input-group" if.bind="tasklist.is_write"><form submit.trigger="addTodo(newTodo)"><input type="text" value.bind="newTodo"> <button type="submit" class="btn btn-primary btn-sm" disabled.bind="newTodo===\'\'">Add Todo</button></form></div><div [hidden]="newTodo"></div><div [hidden]="!newTodo">Typing: ${newTodo} </div><br><div><div repeat.for="todo of todos"><div if.bind="!todo.done" style="margin:1.5%"><button class="btn btn-info btn-xs" click.delegate="updateTodo(todo.id)" disabled.bind="!tasklist.is_write">Done</button> <span>&nbsp;${todo.name}</span></div></div></div><br><div><button click.delegate="doneAllTodos()" class="btn btn-primary btn-sm" disabled.bind="!tasklist.is_write || tasklist.count < 1">Mark all as Done</button></div></div><div class="col-sm-6"><h3>DONE</h3><div><div repeat.for="todo of todos"><div if.bind="todo.done" style="margin:1.5%"><button class="btn btn-warning btn-xs" click.delegate="deleteTodo(todo.id)" disabled.bind="!tasklist.is_write">Delete</button> <span>&nbsp;${todo.name}</span></div></div></div><br><div><button click.delegate="deleteAllDones()" class="btn btn-danger btn-sm" disabled.bind="!tasklist.is_write || tasklist.done < 1">Delete all Done</button></div></div></div></ux-dialog-body><ux-dialog-footer><button click.delegate="controller.cancel()">Cancel</button> <button click.delegate="controller.ok(rating)">Ok</button></ux-dialog-footer></ux-dialog></template>'});
+define('app',["require", "exports", "aurelia-router"], function (require, exports, aurelia_router_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var App = (function () {
+        function App() {
+        }
+        App.prototype.configureRouter = function (config, router) {
+            config.title = 'Login';
+            config.addAuthorizeStep(AuthorizeStep);
+            config.map([
+                { route: 'login', moduleId: 'components/login/login', nav: true, name: 'login', title: 'Login', settings: { roles: [] } },
+                { route: 'register', moduleId: 'components/register/register', nav: true, name: 'register', title: 'Register', settings: { roles: [] } },
+                { route: 'dashboard', moduleId: 'components/dashboard/dashboard', nav: true, name: 'dashboard', title: 'Dashboard', settings: { roles: ['admin'] } },
+                { route: '', redirect: 'login' },
+            ]);
+            this.router = router;
+        };
+        return App;
+    }());
+    exports.App = App;
+    var AuthorizeStep = (function () {
+        function AuthorizeStep() {
+        }
+        AuthorizeStep.prototype.run = function (navigationInstruction, next) {
+            if (navigationInstruction.getAllInstructions().some(function (i) { return i.config.settings.roles.indexOf('admin') !== -1; })) {
+                var isAdmin = localStorage.getItem('authenIsOk');
+                if (!isAdmin) {
+                    return next.cancel(new aurelia_router_1.Redirect('login'));
+                }
+            }
+            return next();
+        };
+        return AuthorizeStep;
+    }());
+});
+
+
+
+define('environment',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = {
+        debug: true,
+        testing: true
+    };
+});
+
+
+
+define('main',["require", "exports", "./environment", "aurelia-pal"], function (require, exports, environment_1, aurelia_pal_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function configure(aurelia) {
+        aurelia.use
+            .standardConfiguration()
+            .feature('resources');
+        aurelia.use
+            .standardConfiguration()
+            .plugin('datatables');
+        aurelia.use
+            .standardConfiguration()
+            .developmentLogging()
+            .plugin(aurelia_pal_1.PLATFORM.moduleName('aurelia-dialog'));
+        if (environment_1.default.debug) {
+            aurelia.use.developmentLogging();
+        }
+        if (environment_1.default.testing) {
+            aurelia.use.plugin('aurelia-testing');
+        }
+        aurelia.start().then(function () { return aurelia.setRoot(); });
+    }
+    exports.configure = configure;
+});
+
+
+
+define('resources/index',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function configure(config) {
+    }
+    exports.configure = configure;
+});
+
+
+
+define('utils/authen.service',["require", "exports", "aurelia-http-client", "./constants"], function (require, exports, aurelia_http_client_1, PRODUCT) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var httpClient = new aurelia_http_client_1.HttpClient();
+    httpClient.configure(function (config) {
+        config
+            .withBaseUrl(PRODUCT.serverURL)
+            .withInterceptor({
+            request: function (message) {
+                return message;
+            },
+            requestError: function (error) {
+                throw error;
+            },
+            response: function (message) {
+                return message;
+            },
+            responseError: function (error) {
+                throw error;
+            }
+        });
+    });
+    var AuthenService = (function () {
+        function AuthenService(defaultData, currentUser) {
+            this.defaultData = defaultData;
+            this.currentUser = currentUser;
+            this.defaultData = { 'uid': { value: null }, 'client': { value: null }, 'access-token': { value: null } };
+            this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || this.defaultData;
+        }
+        AuthenService.prototype.login = function (email, password) {
+            var _this = this;
+            return httpClient.post(PRODUCT.userSignInPATH, { email: email, password: password })
+                .then(function (response) {
+                localStorage.setItem('currentUser', JSON.stringify(response.headers.headers));
+                localStorage.setItem('authenIsOk', 'true');
+                _this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                return response;
+            })
+                .catch(this.handleError);
+        };
+        AuthenService.prototype.logout = function () {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authenIsOk');
+            this.currentUser = this.defaultData;
+        };
+        AuthenService.prototype.extractData = function (res) {
+            if (res.status < 200 || res.status >= 300) {
+                throw new Error('Bad response status: ' + res.status);
+            }
+        };
+        AuthenService.prototype.handleError = function (error) {
+            console.error('An error occurred', error);
+            return Promise.reject(error.message || error);
+        };
+        AuthenService.prototype.getUserToken = function () {
+            var data = JSON.parse(localStorage.getItem('currentUser')) || this.defaultData;
+            return data;
+        };
+        return AuthenService;
+    }());
+    exports.AuthenService = AuthenService;
+});
+
+
+
+define('utils/constants',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.serverURL = 'https://herokutuan.herokuapp.com';
+    exports.tasklistsPATH = '/task_lists';
+    exports.todosPATH = 'todos';
+    exports.userCreatePATH = '/auth';
+    exports.userPasswordPATH = '/auth/password';
+    exports.userSignInPATH = '/auth/sign_in';
+    exports.getUsersPATH = '/users';
+    exports.searchTodoPATH = '/search';
+    exports.sharePATH = '/share';
+    exports.tasklistsAuthorizedPATH = '/shared';
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('utils/user.service',["require", "exports", "aurelia-framework", "aurelia-http-client", "./authen.service", "./constants"], function (require, exports, aurelia_framework_1, aurelia_http_client_1, authen_service_1, PRODUCT) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var defaultData = { 'uid': { value: null }, 'client': { value: null }, 'access-token': { value: null } };
+    var currentUser = JSON.parse(localStorage.getItem('currentUser')) || defaultData;
+    var httpClient = new aurelia_http_client_1.HttpClient();
+    httpClient.configure(function (config) {
+        config
+            .withBaseUrl(PRODUCT.serverURL)
+            .withHeader('Content-Type', 'application/json; charset=utf-8')
+            .withHeader('Uid', currentUser['uid'].value)
+            .withHeader('Client', currentUser['client'].value)
+            .withHeader('Access-Token', currentUser['access-token'].value)
+            .withInterceptor({
+            request: function (message) {
+                return message;
+            },
+            requestError: function (error) {
+                throw error;
+            },
+            response: function (message) {
+                return message;
+            },
+            responseError: function (error) {
+                throw error;
+            }
+        });
+    });
+    var UserService = (function () {
+        function UserService(authenService) {
+            this.authenService = authenService;
+        }
+        UserService.prototype.createUser = function (user) {
+            return httpClient.post(PRODUCT.userCreatePATH, user)
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function (error) { return console.log('got failure', error); });
+        };
+        UserService.prototype.changePassword = function (changepassword) {
+            return httpClient.put(PRODUCT.userPasswordPATH, changepassword)
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function (error) { return console.log('got failure', error); });
+        };
+        UserService.prototype.getUsers = function () {
+            return httpClient.get(PRODUCT.getUsersPATH)
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function (error) { return console.log('got failure', error); });
+        };
+        UserService.prototype.getCurrentUser = function () {
+            var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            return currentUser['uid'].value;
+        };
+        UserService = __decorate([
+            aurelia_framework_1.inject(authen_service_1.AuthenService),
+            __metadata("design:paramtypes", [authen_service_1.AuthenService])
+        ], UserService);
+        return UserService;
+    }());
+    exports.UserService = UserService;
+});
+
+
+
+define('components/dashboard/dashboard',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var DashBoard = (function () {
+        function DashBoard() {
+        }
+        DashBoard.prototype.configureRouter = function (config, router) {
+            config.title = 'Dashboard';
+            config.map([
+                { route: 'tasklists', moduleId: 'components/dashboard/tasklists/tasklists', nav: true, name: 'tasklists', title: 'Tasklists' },
+                { route: 'profile', moduleId: 'components/dashboard/profile/profile', nav: true, name: 'profile', title: 'Profile' },
+                { route: '', redirect: 'tasklists' },
+            ]);
+            this.router = router;
+        };
+        return DashBoard;
+    }());
+    exports.DashBoard = DashBoard;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('components/login/login',["require", "exports", "../../utils/authen.service", "aurelia-router", "aurelia-framework"], function (require, exports, authen_service_1, aurelia_router_1, aurelia_framework_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Login = (function () {
+        function Login(router, authenService) {
+            this.router = router;
+            this.authenService = authenService;
+            this.userLogin = {};
+            this.loading = false;
+        }
+        Login.prototype.created = function () {
+            this.authenService.logout();
+        };
+        Login.prototype.login = function () {
+            var _this = this;
+            this.loading = true;
+            this.authenService.login(this.userLogin.email, this.userLogin.password)
+                .then(function (response) {
+                _this.router.navigate('dashboard');
+            });
+        };
+        Login = __decorate([
+            aurelia_framework_1.inject(aurelia_router_1.Router, authen_service_1.AuthenService),
+            __metadata("design:paramtypes", [aurelia_router_1.Router,
+                authen_service_1.AuthenService])
+        ], Login);
+        return Login;
+    }());
+    exports.Login = Login;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('components/register/register',["require", "exports", "../../utils/user.service", "aurelia-router", "aurelia-framework"], function (require, exports, user_service_1, aurelia_router_1, aurelia_framework_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Register = (function () {
+        function Register(router, userService) {
+            this.router = router;
+            this.userService = userService;
+            this.userRegister = {};
+            this.loading = false;
+        }
+        Register.prototype.register = function () {
+            var _this = this;
+            this.loading = true;
+            this.userService.createUser(this.userRegister)
+                .then(function () {
+                alert('Register successfully, please Login.');
+                _this.router.navigate('login');
+            })
+                .catch(function () { return alert('Register got failure!'); });
+        };
+        Register = __decorate([
+            aurelia_framework_1.inject(aurelia_router_1.Router, user_service_1.UserService),
+            __metadata("design:paramtypes", [aurelia_router_1.Router,
+                user_service_1.UserService])
+        ], Register);
+        return Register;
+    }());
+    exports.Register = Register;
+});
+
+
+
+define('utils/models/authen',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Authen = (function () {
+        function Authen() {
+        }
+        return Authen;
+    }());
+    exports.Authen = Authen;
+});
+
+
+
+define('utils/models/index',["require", "exports", "./user", "./tasklist", "./password-change", "./todo", "./authen", "./todo-search"], function (require, exports, user_1, tasklist_1, password_change_1, todo_1, authen_1, todo_search_1) {
+    "use strict";
+    function __export(m) {
+        for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+    }
+    Object.defineProperty(exports, "__esModule", { value: true });
+    __export(user_1);
+    __export(tasklist_1);
+    __export(password_change_1);
+    __export(todo_1);
+    __export(authen_1);
+    __export(todo_search_1);
+});
+
+
+
+define('utils/models/password-change',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var PasswordChange = (function () {
+        function PasswordChange() {
+        }
+        return PasswordChange;
+    }());
+    exports.PasswordChange = PasswordChange;
+});
+
+
+
+define('utils/models/tasklist',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Tasklist = (function () {
+        function Tasklist() {
+        }
+        return Tasklist;
+    }());
+    exports.Tasklist = Tasklist;
+});
+
+
+
+define('utils/models/todo-search',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var TodoSearch = (function () {
+        function TodoSearch() {
+        }
+        return TodoSearch;
+    }());
+    exports.TodoSearch = TodoSearch;
+});
+
+
+
+define('utils/models/todo',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Todo = (function () {
+        function Todo() {
+        }
+        return Todo;
+    }());
+    exports.Todo = Todo;
+});
+
+
+
+define('utils/models/user',["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var User = (function () {
+        function User() {
+        }
+        return User;
+    }());
+    exports.User = User;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('utils/services/tasklist.service',["require", "exports", "aurelia-framework", "aurelia-http-client", "../constants", "../authen.service"], function (require, exports, aurelia_framework_1, aurelia_http_client_1, PRODUCT, authen_service_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var TasklistService = (function () {
+        function TasklistService(authenService, httpClient) {
+            var _this = this;
+            this.authenService = authenService;
+            this.httpClient = httpClient;
+            this.httpClient.configure(function (config) {
+                config
+                    .withBaseUrl(PRODUCT.serverURL)
+                    .withHeader('Content-Type', 'application/json; charset=utf-8')
+                    .withHeader('Uid', _this.authenService.getUserToken()['uid'].value)
+                    .withHeader('Client', _this.authenService.getUserToken()['client'].value)
+                    .withHeader('Access-Token', _this.authenService.getUserToken()['access-token'].value)
+                    .withInterceptor({
+                    request: function (message) {
+                        return message;
+                    },
+                    requestError: function (error) {
+                        throw error;
+                    },
+                    response: function (message) {
+                        return message;
+                    },
+                    responseError: function (error) {
+                        throw error;
+                    }
+                });
+            });
+        }
+        TasklistService.prototype.getTasklists = function () {
+            return this.httpClient.get(PRODUCT.tasklistsPATH)
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function (error) { return console.log('getTasklists got failure', error); });
+        };
+        TasklistService.prototype.getTasklist = function (tasklist_id) {
+            return this.httpClient.get(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/")
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('getTasklist got failure'); });
+        };
+        TasklistService.prototype.getTasklistsAuthorized = function () {
+            return this.httpClient.get(PRODUCT.tasklistsAuthorizedPATH)
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('getTasklistsAuthorized got failure'); });
+        };
+        TasklistService.prototype.getAuthorizedUsers = function (tasklist_id) {
+            return this.httpClient.get(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.sharePATH + "/", {
+                method: 'get',
+            })
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.createAuthorizedUser = function (tasklist_id, user_id) {
+            return this.httpClient.post(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.sharePATH + "/", { user_id: user_id })
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.updateAuthorizedUser = function (tasklist_id, user_id, is_write) {
+            return this.httpClient.put(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.sharePATH + "/", {
+                user_id: user_id,
+                is_write: is_write
+            })
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.deleteAuthorizedUser = function (tasklist_id, user_id) {
+            return this.httpClient.delete(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.sharePATH + "/" + user_id)
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.createTasklist = function (tasklistName) {
+            return this.httpClient.post("" + PRODUCT.tasklistsPATH, { name: tasklistName })
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('createTasklist got failure'); });
+        };
+        TasklistService.prototype.deleteTasklist = function (id) {
+            return this.httpClient.delete(PRODUCT.tasklistsPATH + "/" + id + "/")
+                .then(function () {
+                console.log("delete tasklist " + id + " success in service");
+            })
+                .catch(function (error) { return console.log('got failure', error); });
+        };
+        TasklistService.prototype.updateTasklist = function (tasklist_id, tasklist_name) {
+            return this.httpClient.put(PRODUCT.tasklistsPATH + "/" + tasklist_id, { name: tasklist_name })
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.getTodos = function (tasklist_id) {
+            return this.httpClient.get(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.todosPATH + "/")
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.addTodo = function (tasklist_id, name) {
+            return this.httpClient.post(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.todosPATH + "/", { name: name })
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.updateTodo = function (tasklist_id, todo_id) {
+            return this.httpClient.put(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.todosPATH + "/" + todo_id, { done: true })
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.deleteTodo = function (tasklist_id, todo_id) {
+            return this.httpClient.delete(PRODUCT.tasklistsPATH + "/" + tasklist_id + "/" + PRODUCT.todosPATH + "/" + todo_id)
+                .then(function (response) {
+                return JSON.parse(response.response);
+            })
+                .catch(function () { return console.log('got failure'); });
+        };
+        TasklistService.prototype.extractData = function (res) {
+            if (res.status < 200 || res.status >= 300) {
+                throw new Error('Bad response status: ' + res.status);
+            }
+        };
+        TasklistService.prototype.handleError = function (error) {
+            console.error('An error occurred', error);
+            return Promise.reject(error.message || error);
+        };
+        TasklistService = __decorate([
+            aurelia_framework_1.inject(authen_service_1.AuthenService, aurelia_http_client_1.HttpClient),
+            __metadata("design:paramtypes", [authen_service_1.AuthenService, aurelia_http_client_1.HttpClient])
+        ], TasklistService);
+        return TasklistService;
+    }());
+    exports.TasklistService = TasklistService;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('components/dashboard/profile/profile',["require", "exports", "aurelia-framework", "../../../utils/user.service", "aurelia-router"], function (require, exports, aurelia_framework_1, user_service_1, aurelia_router_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Profile = (function () {
+        function Profile(router, userService) {
+            this.router = router;
+            this.userService = userService;
+            this.newPassword = {};
+        }
+        Profile.prototype.created = function () {
+            this.current_user = this.userService.getCurrentUser();
+        };
+        Profile.prototype.changePassword = function () {
+            var _this = this;
+            this.userService.changePassword(this.newPassword)
+                .then(function (data) {
+                _this.router.navigate('/');
+                alert('Change password success');
+            })
+                .catch(function () {
+                alert('Change password fail');
+            });
+        };
+        Profile = __decorate([
+            aurelia_framework_1.inject(aurelia_router_1.Router, user_service_1.UserService),
+            __metadata("design:paramtypes", [aurelia_router_1.Router,
+                user_service_1.UserService])
+        ], Profile);
+        return Profile;
+    }());
+    exports.Profile = Profile;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('components/dashboard/tasklists/tasklists',["require", "exports", "aurelia-router", "../../../utils/services/tasklist.service", "../../../utils/user.service", "aurelia-framework", "aurelia-dialog", "./tasklist-detail/tasklist-detail", "./share-tasklist/share-tasklist", "./edit-tasklist/edit-tasklist", "jquery"], function (require, exports, aurelia_router_1, tasklist_service_1, user_service_1, aurelia_framework_1, aurelia_dialog_1, tasklist_detail_1, share_tasklist_1, edit_tasklist_1, $) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var TaskLists = (function () {
+        function TaskLists(router, dialogService, tasklistService, userService) {
+            this.router = router;
+            this.dialogService = dialogService;
+            this.tasklistService = tasklistService;
+            this.userService = userService;
+            this.data = [];
+            this.tasklistName = '';
+        }
+        TaskLists.prototype.renderDatatable = function () {
+            $('#example').dataTable({
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+            });
+        };
+        TaskLists.prototype.created = function () {
+            this.getTasklists();
+            this.getUsers();
+        };
+        TaskLists.prototype.getUsers = function () {
+            var _this = this;
+            this.userService.getUsers()
+                .then(function (data) { return _this.users = data; })
+                .catch(function () { return console.log('getUsers fail'); });
+        };
+        TaskLists.prototype.getTasklists = function () {
+            var _this = this;
+            this.tasklistService.getTasklists()
+                .then(function (data) {
+                _this.data = data;
+                console.log('Get tasklists success');
+                _this.data.forEach(function (item) {
+                    item.owner = true;
+                    item.is_write = true;
+                    item.user = _this.userService.getCurrentUser();
+                });
+                _this.data.map(function (item, index) {
+                    _this.getAuthorizedUsers(item.id, index);
+                    _this.getTodos(item.id, index);
+                });
+                _this.getTasklistsAuthorized();
+            })
+                .catch(function (error) { return console.log('getTasklists fail', error); });
+        };
+        TaskLists.prototype.getTodos = function (tasklist_id, data_id) {
+            var _this = this;
+            this.tasklistService.getTodos(tasklist_id)
+                .then(function (data) {
+                _this.data[data_id].count = 0;
+                data.forEach(function (item) {
+                    if (!item.done) {
+                        _this.data[data_id].count++;
+                    }
+                });
+                _this.data[data_id].done = data.length - _this.data[data_id].count;
+                console.log('Get todos success');
+            })
+                .catch(function (error) { return console.log('Get todos fail'); });
+        };
+        TaskLists.prototype.getTasklistsAuthorized = function () {
+            var _this = this;
+            this.tasklistService.getTasklistsAuthorized()
+                .then(function (data) {
+                data.forEach(function (item) {
+                    item.user = _this.users.filter(function (h) { return h.id === item.user_id; })[0].email;
+                });
+                _this.data = _this.data.concat(data);
+                console.log('getTasklistsAuthorized success');
+            })
+                .then(function () { return _this.renderDatatable(); })
+                .catch(function () { return console.log('getTasklistsAuthorized fail'); });
+        };
+        TaskLists.prototype.getAuthorizedUsers = function (tasklist_id, data_id) {
+            var _this = this;
+            this.tasklistService.getAuthorizedUsers(tasklist_id)
+                .then(function (data) {
+                _this.data[data_id].share = data.length;
+                _this.data[data_id].authorizedUsers = data;
+                console.log('Get who authed tasklists success');
+            })
+                .catch(function () { return console.log('getAuthorizedUsers fail'); });
+        };
+        TaskLists.prototype.getTasklist = function (tasklist_id) {
+            var _this = this;
+            this.tasklistService.getTasklist(tasklist_id)
+                .then(function (data) {
+                _this.data.filter(function (h) { return h.id === tasklist_id; })[0].name = data.name;
+                console.log("Get tasklist " + tasklist_id + " success");
+            })
+                .catch(function () { return console.log("Get tasklist " + tasklist_id + " fail"); });
+        };
+        TaskLists.prototype.createTasklist = function () {
+            var _this = this;
+            this.tasklistService.createTasklist(this.tasklistName)
+                .then(function (response) {
+                _this.data.push(response);
+                _this.data[_this.data.length - 1].is_write = true;
+                _this.data[_this.data.length - 1].owner = true;
+                _this.data[_this.data.length - 1].share = 0;
+                _this.data[_this.data.length - 1].count = 0;
+                _this.data[_this.data.length - 1].done = 0;
+                _this.data[_this.data.length - 1].user = _this.userService.getCurrentUser();
+                _this.data[_this.data.length - 1].authorizedUsers = [];
+                console.log('Create tasklist success');
+                _this.tasklistName = '';
+            })
+                .catch(function () { return console.log("Create tasklist fail"); });
+        };
+        TaskLists.prototype.deleteTasklist = function (id) {
+            var _this = this;
+            this.tasklistService.deleteTasklist(id)
+                .then(function () {
+                _this.data = _this.data.filter(function (h) { return h.id !== id; });
+            })
+                .catch(function (error) {
+                console.log("Delete tasklist " + id + " fail", error);
+            });
+        };
+        TaskLists.prototype.showDetail = function (item) {
+            this.dialogService.open({ viewModel: tasklist_detail_1.TasklistDetail, model: item })
+                .whenClosed(function (response) {
+                if (!response.wasCancelled) {
+                    console.log('OK');
+                }
+                else {
+                    console.log('Cancel');
+                }
+                console.log(response.output);
+            });
+        };
+        TaskLists.prototype.share = function (item) {
+            this.dialogService.open({ viewModel: share_tasklist_1.ShareTasklist, model: item })
+                .whenClosed(function (response) {
+                if (!response.wasCancelled) {
+                    console.log('OK');
+                }
+                else {
+                    console.log('Cancel');
+                }
+                console.log(response.output);
+            });
+        };
+        TaskLists.prototype.edit = function (item) {
+            this.dialogService.open({ viewModel: edit_tasklist_1.EditTasklist, model: item })
+                .whenClosed(function (response) {
+                if (!response.wasCancelled) {
+                    item.name = response.output;
+                    console.log('OK');
+                }
+                else {
+                    console.log('Cancel');
+                }
+                console.log(response.output);
+            });
+        };
+        TaskLists = __decorate([
+            aurelia_framework_1.inject(aurelia_router_1.Router, aurelia_dialog_1.DialogService, tasklist_service_1.TasklistService, user_service_1.UserService),
+            __metadata("design:paramtypes", [aurelia_router_1.Router,
+                aurelia_dialog_1.DialogService,
+                tasklist_service_1.TasklistService,
+                user_service_1.UserService])
+        ], TaskLists);
+        return TaskLists;
+    }());
+    exports.TaskLists = TaskLists;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('components/dashboard/tasklists/edit-tasklist/edit-tasklist',["require", "exports", "aurelia-framework", "aurelia-dialog", "../../../../utils/services/tasklist.service"], function (require, exports, aurelia_framework_1, aurelia_dialog_1, tasklist_service_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var EditTasklist = (function () {
+        function EditTasklist(controller, tasklistService) {
+            this.controller = controller;
+            this.tasklistService = tasklistService;
+        }
+        EditTasklist.prototype.activate = function (tasklist) {
+            this.rename = tasklist.name;
+            this.tasklist = tasklist;
+        };
+        EditTasklist.prototype.updateTasklist = function (tasklist_name) {
+            var _this = this;
+            this.tasklistService.updateTasklist(this.tasklist.id, tasklist_name)
+                .then(function () { return console.log('Rename tasklist success'); })
+                .then(function () { return _this.controller.ok(tasklist_name); })
+                .catch(function () {
+                console.log('Rename tasklist fail');
+            });
+        };
+        EditTasklist.prototype.changeName = function (event) {
+            if (event.target.dataset.name) {
+                this.rename = event.target.dataset.name;
+            }
+        };
+        EditTasklist = __decorate([
+            aurelia_framework_1.inject(aurelia_dialog_1.DialogController, tasklist_service_1.TasklistService),
+            __metadata("design:paramtypes", [aurelia_dialog_1.DialogController,
+                tasklist_service_1.TasklistService])
+        ], EditTasklist);
+        return EditTasklist;
+    }());
+    exports.EditTasklist = EditTasklist;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('components/dashboard/tasklists/tasklist-detail/tasklist-detail',["require", "exports", "aurelia-framework", "aurelia-dialog", "../../../../utils/services/tasklist.service"], function (require, exports, aurelia_framework_1, aurelia_dialog_1, tasklist_service_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var mockdata = [
+        { id: 1, name: 'todo1', done: true },
+        { id: 2, name: 'todo2', done: true },
+        { id: 3, name: 'todo3', done: true },
+        { id: 4, name: 'todo4', done: false },
+        { id: 5, name: 'todo5', done: false },
+        { id: 6, name: 'todo6', done: false },
+    ];
+    var TasklistDetail = (function () {
+        function TasklistDetail(controller, tasklistService) {
+            this.controller = controller;
+            this.tasklistService = tasklistService;
+            this.todos = [];
+            this.newTodo = '';
+        }
+        TasklistDetail.prototype.activate = function (tasklist) {
+            this.tasklist = tasklist;
+        };
+        TasklistDetail.prototype.created = function () {
+            this.getTodos();
+        };
+        TasklistDetail.prototype.getTodos = function () {
+            var _this = this;
+            this.tasklistService.getTodos(this.tasklist.id)
+                .then(function (data) {
+                _this.todos = data;
+                _this.tasklist.count = 0;
+                data.forEach(function (item) {
+                    if (!item.done) {
+                        _this.tasklist.count++;
+                    }
+                });
+                _this.tasklist.done = data.length - _this.tasklist.count;
+                console.log('Get todos success');
+            })
+                .catch(function (error) { return console.log('Get todos fail'); });
+        };
+        TasklistDetail.prototype.addTodo = function (newTodo) {
+            var _this = this;
+            this.tasklistService.addTodo(this.tasklist.id, this.newTodo)
+                .then(function () {
+                console.log("Add todos " + _this.newTodo + " success");
+                _this.getTodos();
+            })
+                .catch(function (error) { return console.log("Add todos " + _this.newTodo + " fail"); });
+            this.newTodo = '';
+        };
+        TasklistDetail.prototype.updateTodo = function (todo_id) {
+            var _this = this;
+            this.tasklistService.updateTodo(this.tasklist.id, todo_id)
+                .then(function (data) {
+                console.log("Done todo " + todo_id + " success");
+                _this.getTodos();
+            })
+                .catch(function (error) { return console.log("Done todo " + todo_id + " fail"); });
+        };
+        TasklistDetail.prototype.deleteTodo = function (todo_id) {
+            var _this = this;
+            this.tasklistService.deleteTodo(this.tasklist.id, todo_id)
+                .then(function (data) {
+                console.log("Delete todo " + todo_id + " success");
+                _this.getTodos();
+            })
+                .catch(function (error) {
+                console.log("Delete todo " + todo_id + " fail");
+                _this.getTodos();
+            });
+        };
+        TasklistDetail.prototype.doneAllTodos = function () {
+            var _this = this;
+            this.todos.forEach(function (item) {
+                if (!item.done) {
+                    _this.updateTodo(item.id);
+                }
+            });
+            console.log('Done all todos');
+        };
+        TasklistDetail.prototype.deleteAllDones = function () {
+            var _this = this;
+            this.todos.forEach(function (item) {
+                if (item.done) {
+                    _this.deleteTodo(item.id);
+                }
+            });
+            console.log('Delete all dones');
+        };
+        TasklistDetail = __decorate([
+            aurelia_framework_1.inject(aurelia_dialog_1.DialogController, tasklist_service_1.TasklistService),
+            __metadata("design:paramtypes", [aurelia_dialog_1.DialogController,
+                tasklist_service_1.TasklistService])
+        ], TasklistDetail);
+        return TasklistDetail;
+    }());
+    exports.TasklistDetail = TasklistDetail;
+});
+
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+define('components/dashboard/tasklists/share-tasklist/share-tasklist',["require", "exports", "aurelia-framework", "aurelia-dialog", "../../../../utils/user.service", "../../../../utils/services/tasklist.service"], function (require, exports, aurelia_framework_1, aurelia_dialog_1, user_service_1, tasklist_service_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var ShareTasklist = (function () {
+        function ShareTasklist(controller, userService, tasklistService) {
+            this.controller = controller;
+            this.userService = userService;
+            this.tasklistService = tasklistService;
+            this.user = [];
+        }
+        ShareTasklist.prototype.activate = function (tasklist) {
+            this.tasklist = tasklist;
+            this.authorizedUsers = this.tasklist.authorizedUsers;
+        };
+        ShareTasklist.prototype.created = function () {
+            this.getUsers();
+            console.log(this.authorizedUsers);
+        };
+        ShareTasklist.prototype.getUsers = function () {
+            var _this = this;
+            this.userService.getUsers()
+                .then(function (data) {
+                _this.users = data;
+                console.log('Get users success');
+                _this.users = _this.users.filter(function (h) { return h.email !== _this.userService.getCurrentUser()[0]; });
+                if (_this.authorizedUsers) {
+                    _this.authorizedUsers.forEach(function (item) {
+                        item.user_email = _this.users.filter(function (h) { return h.id === item.user_id; })[0].email;
+                        _this.users = _this.users.filter(function (h) { return h.id !== item.user_id; });
+                    });
+                }
+            })
+                .catch(function (error) { return console.log('Get users fail'); });
+        };
+        ShareTasklist.prototype.createAuthorizedUser = function (user_id) {
+            var _this = this;
+            this.tasklistService.createAuthorizedUser(this.tasklist.id, user_id)
+                .then(function (data) {
+                _this.authorizedUsers.push(data);
+                var email = _this.users.filter(function (h) { return h.id === data.user_id; })[0].email;
+                _this.authorizedUsers[_this.authorizedUsers.length - 1].user_email = email;
+                console.log("Create Authen users success");
+                _this.tasklist.share++;
+                _this.users = _this.users.filter(function (h) { return h.id !== user_id; });
+            })
+                .catch(function (error) { return console.log('Create Authen users fail'); });
+        };
+        ShareTasklist.prototype.deleteAuthorizedUser = function (user_id) {
+            var _this = this;
+            this.tasklistService.deleteAuthorizedUser(this.tasklist.id, user_id)
+                .then(function (data) {
+                var email = _this.authorizedUsers.filter(function (h) { return h.user_id === user_id; })[0].user_email;
+                _this.users.push({ id: user_id, email: email, password: '' });
+                _this.authorizedUsers = _this.authorizedUsers.filter(function (h) { return h.user_id !== user_id; });
+                console.log("Delete Authen users success");
+                _this.tasklist.share--;
+            })
+                .catch(function (error) { return console.log('Delete Authen users fail'); });
+        };
+        ShareTasklist.prototype.updateAuthorizedUser = function (user_id) {
+            var authen_user = this.authorizedUsers.filter(function (h) { return h.user_id === user_id; })[0];
+            this.tasklistService.updateAuthorizedUser(this.tasklist.id, user_id, !authen_user.is_write)
+                .then(function (data) {
+                console.log(authen_user);
+                authen_user.is_write = data.is_write;
+                console.log('Update Authen users success');
+            })
+                .catch(function (error) { return console.log('Update Authen users fail'); });
+        };
+        ShareTasklist = __decorate([
+            aurelia_framework_1.inject(aurelia_dialog_1.DialogController, user_service_1.UserService, tasklist_service_1.TasklistService),
+            __metadata("design:paramtypes", [aurelia_dialog_1.DialogController,
+                user_service_1.UserService,
+                tasklist_service_1.TasklistService])
+        ], ShareTasklist);
+        return ShareTasklist;
+    }());
+    exports.ShareTasklist = ShareTasklist;
+});
+
+
+
+define('text!app.html', ['module'], function(module) { module.exports = "<template><div><router-view></router-view></div></template>"; });
+define('text!components/dashboard/dashboard.html', ['module'], function(module) { module.exports = "<template><nav class=\"navbar navbar-inverse fix-position\"><div class=\"container-fluid\"><div class=\"navbar-header\"><a class=\"navbar-brand\">TODO LISTS</a></div><ul class=\"nav navbar-nav\"><li class=\"active\"><a route-href=\"route: tasklists\" class=\"btn btn-link\" id=\"tasklists-route\">Tasklists</a></li><li><a route-href=\"route: profile\" class=\"btn btn-link\" id=\"profile-route\">Profile</a></li></ul></div></nav><div class=\"container data-content\"><router-view></router-view></div></template>"; });
+define('text!components/dashboard/profile/profile.css', ['module'], function(module) { module.exports = ""; });
+define('text!components/login/login.html', ['module'], function(module) { module.exports = "<template><div class=\"col-md-6 col-md-offset-3\"><h2>Login</h2><form name=\"form\" submit.delegate=\"login()\"><div class=\"form-group\"><label>Email</label><input type=\"email\" class=\"form-control\" name=\"password\" value.bind=\"userLogin.email\"></div><div class=\"form-group\"><label>Password</label><input type=\"password\" class=\"form-control\" name=\"password\" value.bind=\"userLogin.password\"></div><div class=\"form-group\"><button class=\"btn btn-primary\" type=\"submit\">Login</button> <a route-href=\"route: register\" class=\"btn btn-link\" id=\"register-route\">Register</a></div></form></div></template>"; });
+define('text!components/dashboard/tasklists/tasklists.css', ['module'], function(module) { module.exports = "#client-side-demo-container {\n  padding: 30px;\n  background-color: white;\n}\n#client-side-demo-container .loader {\n  position: absolute;\n  background-color: rgba(174, 176, 178, 0.2);\n  z-index: 9999;\n  width: 100%;\n  height: 100%;\n}\n#client-side-demo-container .loader i {\n  font-size: 25pt;\n  color: #333;\n  position: absolute;\n  width: unset;\n  top: 40%;\n  left: 47%;\n}\n#client-side-demo-container .content {\n  padding: 0;\n}\n#client-side-demo-container .filter-button {\n  padding: 0;\n  background-color: #ed682f;\n  color: white;\n  opacity: .8;\n  border-radius: 0;\n}\n#client-side-demo-container .nav .nav-item {\n  width: 25%;\n  text-align: center;\n  border: 1px #ed682f solid;\n  opacity: .8;\n}\n#client-side-demo-container .nav .nav-item .nav-link {\n  color: #ed682f;\n  text-transform: uppercase;\n}\n#client-side-demo-container .nav .nav-item .nav-link.active {\n  border-radius: 0;\n  background-color: #ed682f;\n  color: white;\n}\n#client-side-demo-container img {\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n}\n#client-side-demo-container .btn-primary {\n  background-color: #333;\n  color: white;\n  border-color: #333;\n  border-radius: 0px;\n}\n#client-side-demo-container .header {\n  padding: 10px;\n  border-top: 1px solid #e9ecef;\n  border-left: 1px solid #e9ecef;\n  border-right: 1px solid #e9ecef;\n}\n#client-side-demo-container .header h6 {\n  margin-top: 10px;\n  margin-left: 10px;\n}\n#client-side-demo-container .form-control {\n  border-radius: 0;\n  outline: none;\n}\n#client-side-demo-container .descending {\n  margin-left: -7px !important;\n}\n#client-side-demo-container select.form-control {\n  width: 100%;\n  height: 38px;\n  -webkit-appearance: none;\n  font-size: 9pt;\n  -moz-appearance: none;\n  background: url(data:image/svg+xml;utf8,) #fff;\n  background-position: 98% 50%;\n  background-repeat: no-repeat;\n  border-radius: 0;\n  border: 1px solid rgba(0, 0, 0, 0.15);\n  padding: 2px 0 0 10px;\n}\n#client-side-demo-container table {\n  margin: 0;\n}\n#client-side-demo-container table thead .au-table-filter .btn-primary {\n  padding: 1px 6px 2px 6px;\n  border-radius: 0;\n}\n#client-side-demo-container table tbody tr.selected {\n  background-color: #333 !important;\n  color: white !important;\n}\n#client-side-demo-container table tbody tr td:first-child {\n  text-align: center;\n}\n#client-side-demo-container table tbody tr:hover {\n  background-color: #333;\n  color: white !important;\n  cursor: pointer;\n}\n#client-side-demo-container table tbody tr td {\n  vertical-align: middle;\n}\n#client-side-demo-container .footer {\n  padding: 10px 10px;\n  height: 55px;\n  border-left: 1px solid #e9ecef;\n  border-right: 1px solid #e9ecef;\n  border-bottom: 1px solid #e9ecef;\n}\n#client-side-demo-container .footer .col-md-6 {\n  padding: 0;\n}\n#client-side-demo-container .footer .au-table-info {\n  margin-top: 8px;\n  margin-left: 10px;\n}\n#client-side-demo-container .footer .info {\n  margin-top: 0px;\n  display: inline-block;\n}\n#client-side-demo-container .footer nav ul {\n  margin: 0;\n}\n#client-side-demo-container .footer nav ul li a {\n  border-radius: 0px;\n  color: #333;\n}\n#client-side-demo-container .footer nav ul li:hover {\n  cursor: pointer;\n}\n#client-side-demo-container .footer nav ul li.dots {\n  cursor: none !important;\n}\n#client-side-demo-container .footer nav ul li.active a {\n  background-color: #333;\n  border-color: #333;\n  color: white;\n}\n#client-side-demo-container .footer nav ul li.dots {\n  cursor: default !important;\n}\n#client-side-demo-container .footer nav ul li.dots a:hover {\n  background: white !important;\n}\n#client-side-demo-container .nav-tabs {\n  margin-top: 50px;\n}\n\n.glyphicon {\n  font-size: 12px;\n}\n\n.action-button {\n  display: inline-flex;\n}\n\nux-dialog-overlay.active {\n  background-color: black;\n  opacity: .65;\n}\n\nux-dialog-container>div>div {\nwidth: 60%;\n}\n\nux-dialog {\n  width: 100%;\n}\n"; });
+define('text!components/register/register.html', ['module'], function(module) { module.exports = "<template><div class=\"col-md-6 col-md-offset-3\"><h2>Register</h2><form name=\"form\" submit.delegate=\"register()\"><div class=\"form-group\"><label>Email</label><input type=\"email\" class=\"form-control\" name=\"password\" value.bind=\"userRegister.email\"></div><div class=\"form-group\"><label>Password</label><input type=\"password\" class=\"form-control\" name=\"password\" value.bind=\"userRegister.password\"></div><div class=\"form-group\"><button class=\"btn btn-primary\" type=\"submit\">Register</button> <a route-href=\"route: login\" class=\"btn btn-link\" id=\"login-route\">Cancel</a></div></form></div></template>"; });
+define('text!components/dashboard/tasklists/edit-tasklist/edit-tasklist.css', ['module'], function(module) { module.exports = "/*ux-dialog-container>div>div {*/\n  /*width: 60%;*/\n/*}*/\n"; });
+define('text!components/dashboard/profile/profile.html', ['module'], function(module) { module.exports = "<template><div class=\"col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2\"><h3>Welcome ${current_user}</h3><button class=\"btn btn-warning\"><a route-href=\"route: login\" id=\"tasklists-route\">Logout</a></button><br><h3>Change Password</h3><form name=\"form\" submit.delegate=\"changePassword()\"><div class=\"form-group\"><label>Password</label><input type=\"password\" class=\"form-control\" name=\"password\" value.bind=\"newPassword.password\"></div><div class=\"form-group\"><label>Password Confirmation</label><input type=\"password\" class=\"form-control\" name=\"password\" value.bind=\"newPassword.password_confirmation\"></div><div class=\"form-group\"><button class=\"btn btn-primary\" type=\"submit\">Change Password</button></div></form></div></template>"; });
+define('text!components/dashboard/tasklists/share-tasklist/share-tasklist.css', ['module'], function(module) { module.exports = ""; });
+define('text!components/dashboard/tasklists/tasklists.html', ['module'], function(module) { module.exports = "<template><require from=\"./tasklists.css\"></require><form submit.trigger=\"createTasklist()\"><input type=\"text\" value.bind=\"tasklistName\"> <button type=\"submit\" class=\"btn btn-primary btn-sm\" disabled.bind=\"tasklistName===''\">Add Tasklist</button></form><hr><table id=\"example\" class=\"display\" cellspacing=\"0\" width=\"100%\"><thead><tr><th>ID</th><th>List Name</th><th>User</th><th>Share</th><th>Todo</th><th>Done</th><th>Action</th></tr></thead><tr if.bind=\"data.length > 0\" repeat.for=\"item of data\"><td>${item.id}</td><td>${item.name}</td><td>${item.user}</td><td>${item.share}</td><td>${item.count}</td><td>${item.done}</td><td class=\"text-center tl_action\"><div if.bind=\"item.owner\" class=\"action-button\"><button click.delegate=\"edit(item)\"><i class=\"glyphicon glyphicon-pencil\"></i></button> <button click.delegate=\"deleteTasklist(item.id)\"><i class=\"glyphicon glyphicon-remove\"></i></button> <button click.delegate=\"share(item)\"><i class=\"glyphicon glyphicon-share-alt\"></i></button> <button click.delegate=\"showDetail(item)\"><i class=\"glyphicon glyphicon-indent-left\"></i></button></div><div if.bind=\"(!item.owner) && (!item.is_write)\"><button class=\"btn btn-xs btn-warning\" click.delegate=\"showDetail(item)\">Read&nbsp;&nbsp;Only</button></div><div if.bind=\"(!item.owner) && (item.is_write)\"><button class=\"btn btn-xs btn-info\" click.delegate=\"showDetail(item)\">Show Detail</button></div></td></tr></table></template>"; });
+define('text!components/dashboard/tasklists/tasklist-detail/tasklist-detail.css', ['module'], function(module) { module.exports = "ux-dialog-overlay.active {\n  background-color: black;\n  opacity: .65;\n}\n\n/*ux-dialog {*/\n  /*min-width: 600px;*/\n/*}*/\n"; });
+define('text!components/dashboard/tasklists/edit-tasklist/edit-tasklist.html', ['module'], function(module) { module.exports = "<template><require from=\"./edit-tasklist.css\"></require><ux-dialog><ux-dialog-body click.delegate=\"changeName($event)\"><div><label>name:</label><input value.bind=\"rename\" value=\"${tasklist.name}\"></div></ux-dialog-body><ux-dialog-footer><button click.delegate=\"controller.cancel()\">Cancel</button> <button click.delegate=\"updateTasklist(rename)\">Ok</button></ux-dialog-footer></ux-dialog></template>"; });
+define('text!components/dashboard/tasklists/share-tasklist/share-tasklist.html', ['module'], function(module) { module.exports = "<template><require from=\"./share-tasklist.css\"></require><ux-dialog><ux-dialog-body><div class=\"row\"><div class=\"col-xs-12\"><div class=\"button-group\" style=\"display:inline-block\"><button type=\"button\" class=\"btn btn-default btn-sm dropdown-toggle\" data-toggle=\"dropdown\" id=\"control-share\">Share All Actions <span class=\"glyphicon glyphicon-cog\"></span> <span class=\"caret\"></span></button><ul class=\"dropdown-menu\"><li repeat.for=\"user of users\"><div click.delegate=\"createAuthorizedUser(user.id)\">&nbsp; ${user.email} &nbsp;</div></li></ul></div><div repeat.for=\"authen_user of authorizedUsers\" style=\"display:inline-block\"><div><span style=\"cursor:pointer\" class=\"label ${authen_user.is_write == true ? 'label-success' : 'label-default'}\" click.delegate=\"updateAuthorizedUser(authen_user.user_id)\">Write</span><div click.delegate=\"deleteAuthorizedUser(authen_user.user_id)\" style=\"display:inline-block;cursor:pointer\" class=\"${authen_user.is_write == true ? 'text-primary' : 'text-muted'}\">&nbsp;${authen_user.user_email} </div><span>&nbsp;|&nbsp;</span></div></div></div></div></ux-dialog-body><ux-dialog-footer><button click.delegate=\"controller.cancel()\">Cancel</button> <button click.delegate=\"controller.ok(rating)\">Ok</button></ux-dialog-footer></ux-dialog></template>"; });
+define('text!components/dashboard/tasklists/tasklist-detail/tasklist-detail.html', ['module'], function(module) { module.exports = "<template><require from=\"./tasklist-detail.css\"></require><ux-dialog><ux-dialog-body><div class=\"row\"><div class=\"col-sm-6\"><h3>TODOS</h3><div class=\"input-group\" if.bind=\"tasklist.is_write\"><form submit.trigger=\"addTodo(newTodo)\"><input type=\"text\" value.bind=\"newTodo\"> <button type=\"submit\" class=\"btn btn-primary btn-sm\" disabled.bind=\"newTodo===''\">Add Todo</button></form></div><div [hidden]=\"newTodo\"></div><div [hidden]=\"!newTodo\">Typing: ${newTodo} </div><br><div><div repeat.for=\"todo of todos\"><div if.bind=\"!todo.done\" style=\"margin:1.5%\"><button class=\"btn btn-info btn-xs\" click.delegate=\"updateTodo(todo.id)\" disabled.bind=\"!tasklist.is_write\">Done</button> <span>&nbsp;${todo.name}</span></div></div></div><br><div><button click.delegate=\"doneAllTodos()\" class=\"btn btn-primary btn-sm\" disabled.bind=\"!tasklist.is_write || tasklist.count < 1\">Mark all as Done</button></div></div><div class=\"col-sm-6\"><h3>DONE</h3><div><div repeat.for=\"todo of todos\"><div if.bind=\"todo.done\" style=\"margin:1.5%\"><button class=\"btn btn-warning btn-xs\" click.delegate=\"deleteTodo(todo.id)\" disabled.bind=\"!tasklist.is_write\">Delete</button> <span>&nbsp;${todo.name}</span></div></div></div><br><div><button click.delegate=\"deleteAllDones()\" class=\"btn btn-danger btn-sm\" disabled.bind=\"!tasklist.is_write || tasklist.done < 1\">Delete all Done</button></div></div></div></ux-dialog-body><ux-dialog-footer><button click.delegate=\"controller.cancel()\">Cancel</button> <button click.delegate=\"controller.ok(rating)\">Ok</button></ux-dialog-footer></ux-dialog></template>"; });
+//# sourceMappingURL=app-bundle.js.map

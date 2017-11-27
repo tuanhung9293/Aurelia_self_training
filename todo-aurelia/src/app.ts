@@ -20,7 +20,7 @@ export class App {
 class AuthorizeStep implements PipelineStep {
   public run(navigationInstruction: NavigationInstruction, next: Next): Promise<any> {
     if (navigationInstruction.getAllInstructions().some(i => i.config.settings.roles.indexOf('admin') !== -1)) {
-      let isAdmin = /* insert magic here */true;
+      let isAdmin = localStorage.getItem('authenIsOk');
       if (!isAdmin) {
         return next.cancel(new Redirect('login'));
       }

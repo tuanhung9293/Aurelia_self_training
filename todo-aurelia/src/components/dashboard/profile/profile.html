@@ -8,13 +8,13 @@
     <h3>Change Password</h3>
     <form name="form" submit.delegate = "changePassword()">
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" class="form-control" name="password" value.bind="userLogin.email"/>
+        <label>Password</label>
+        <input type="password" class="form-control" name="password" value.bind="newPassword.password"/>
       </div>
 
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" class="form-control" name="password" value.bind="userLogin.password"/>
+        <label>Password Confirmation</label>
+        <input type="password" class="form-control" name="password" value.bind="newPassword.password_confirmation"/>
       </div>
 
       <div class="form-group">
