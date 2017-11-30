@@ -87,6 +87,7 @@
             "path": "../node_modules/aurelia-dialog/dist/amd",
             "main": "aurelia-dialog"
           },
+          "jquery-validation",
           "datatables",
           "text"
         ]

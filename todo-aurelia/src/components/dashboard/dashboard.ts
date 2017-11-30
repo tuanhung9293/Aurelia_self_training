@@ -1,7 +1,14 @@
+import {inject} from 'aurelia-framework';
+import {UserService} from '../../utils/user.service'
 import {RouterConfiguration, Router} from 'aurelia-router';
 
+@inject(UserService)
 export class DashBoard {
   router: Router;
+  current_user: string;
+
+  constructor(private userService: UserService) {}
+
   configureRouter(config: RouterConfiguration, router: Router) {
     config.title = 'Dashboard';
     config.map([
@@ -11,5 +18,9 @@ export class DashBoard {
     ]);
 
     this.router = router;
+  }
+
+  created() {
+    this.current_user = this.userService.getCurrentUser();
   }
 }

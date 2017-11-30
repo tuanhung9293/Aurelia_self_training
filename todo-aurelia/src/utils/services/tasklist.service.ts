@@ -3,40 +3,18 @@ import {HttpClient, Response} from 'aurelia-http-client';
 import * as PRODUCT from '../constants';
 import {AuthenService} from '../authen.service';
 
-// let defaultData = {'uid': {value: null}, 'client': {value: null}, 'access-token': {value: null}};
-// let currentUser = JSON.parse(localStorage.getItem('currentUser')) || defaultData;
 
 @inject(AuthenService, HttpClient)
 export class TasklistService {
   constructor(private authenService: AuthenService, private httpClient: HttpClient) {
-    this.httpClient.configure(config => {
-      config
-        .withBaseUrl(PRODUCT.serverURL)
-        .withHeader('Content-Type', 'application/json; charset=utf-8')
-        .withHeader('Uid', this.authenService.getUserToken()['uid'].value)
-        .withHeader('Client', this.authenService.getUserToken()['client'].value)
-        .withHeader('Access-Token', this.authenService.getUserToken()['access-token'].value)
-        .withInterceptor({
-          request(message) {
-            return message;
-          },
-
-          requestError(error) {
-            throw error;
-          },
-
-          response(message) {
-            return message;
-          },
-
-          responseError(error) {
-            throw error;
-          }
-        });
-    });
   }
 
   getTasklists() {
+    this.authenService.configHttpClient(
+      this.authenService.getUserToken()['uid'].value,
+      this.authenService.getUserToken()['client'].value,
+      this.authenService.getUserToken()['access-token'].value);
+
     return this.httpClient.get(PRODUCT.tasklistsPATH)
       .then(response => {
         return JSON.parse(response.response);
@@ -62,9 +40,7 @@ export class TasklistService {
   }
 
   getAuthorizedUsers(tasklist_id: number) {
-    return this.httpClient.get(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`, {
-      method: 'get',
-    })
+    return this.httpClient.get(`${PRODUCT.tasklistsPATH}/${tasklist_id}/${PRODUCT.sharePATH}/`)
       .then((response) => {
         return JSON.parse(response.response);
       })

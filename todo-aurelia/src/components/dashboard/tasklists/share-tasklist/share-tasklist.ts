@@ -8,7 +8,7 @@ import {TasklistService} from '../../../../utils/services/tasklist.service';
 export class ShareTasklist {
   tasklist: Tasklist;
   authorizedUsers: Authen[];
-  user: User[] = [];
+  users: User[] = [];
 
   constructor(private controller: DialogController,
               private userService: UserService,
@@ -17,12 +17,11 @@ export class ShareTasklist {
 
   activate(tasklist) {
     this.tasklist = tasklist;
-    this.authorizedUsers = this.tasklist.authorizedUsers;
   }
 
   created() {
     this.getUsers();
-    console.log(this.authorizedUsers);
+    this.getAuthorizedUsers(this.tasklist.id);
   }
 
   getUsers() {
@@ -41,6 +40,20 @@ export class ShareTasklist {
         })
       .catch(error => console.log('Get users fail')
     )
+  }
+
+  getAuthorizedUsers(tasklist_id: number) {
+    this.tasklistService.getAuthorizedUsers(tasklist_id)
+      .then(
+        data => {
+          this.authorizedUsers = data;
+          this.authorizedUsers.map( item => {
+            item.user_email = this.users.filter(h => h.id === item.user_id)[0].email;
+          });
+          console.log(this.authorizedUsers, 'Get who authed tasklists success');
+        }
+      )
+      .catch((error) => console.log('getAuthorizedUsers fail', error))
   }
 
   createAuthorizedUser(user_id: number) {

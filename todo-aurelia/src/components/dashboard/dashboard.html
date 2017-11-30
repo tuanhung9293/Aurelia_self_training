@@ -1,20 +1,62 @@
 <template>
-  <nav class="navbar navbar-inverse fix-position">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand">TODO LISTS</a>
-      </div>
-      <ul class="nav navbar-nav">
-        <li class="active">
-          <a route-href="route: tasklists" class="btn btn-link" id="tasklists-route">Tasklists</a>
-        </li>
+  <div id="page-container" class="header-navbar-fixed">
+    <!-- Header -->
+    <header id="header-navbar" class="content-mini content-mini-full" style="border-bottom: 2px solid #bf1b5a;">
+      <!-- Header Navigation Right -->
+      <ul class="nav-header pull-right">
         <li>
-          <a route-href="route: profile" class="btn btn-link" id="profile-route">Profile</a>
+          <div class="btn-group">
+            <button class="btn btn-default btn-image dropdown-toggle" data-toggle="dropdown" type="button">
+              <img src="../../../src/resources/assets/img/avatars/avatar10.jpg" alt="Avatar">
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li class="dropdown-header">Actions</li>
+              <li class="divider"></li>
+              <li>
+                <a tabindex="-1" route-href="route: profile"><i class="si si-settings pull-right"></i>Change password</a>
+              </li>
+              <li>
+                <a tabindex="-1" route-href="route: login"><i class="si si-logout pull-right"></i>Log out</a>
+              </li>
+            </ul>
+          </div>
+        </li>
       </ul>
-    </div>
-  </nav>
+      <!-- END Header Navigation Right -->
 
-  <div class="container data-content">
-    <router-view></router-view>
+      <!-- Header Navigation Left -->
+      <ul class="nav-header pull-left">
+        <li class="js-header-search header-search">
+          <form class="form-horizontal" action="base_pages_search.html">
+            <div class="form-material form-material-primary input-group remove-margin-t remove-margin-b">
+              <input class="form-control" type="text" id="base-material-text" name="base-material-text"
+                     placeholder="Search todo ...">
+              <span class="input-group-addon"><i class="si si-magnifier"></i></span>
+            </div>
+          </form>
+        </li>
+      </ul>
+      <!-- END Header Navigation Left -->
+    </header>
+    <!-- END Header -->
+
+    <!-- Main Container -->
+    <main id="main-container">
+      <!-- Page Header -->
+      <div class="content bg-image overflow-hidden"
+           style="background-image: url('../../../src/resources/assets/img/photos/photo3@2x.jpg');">
+        <div class="push-50-t push-15">
+          <h1 class="h1 text-white animated zoomIn">Welcome ${current_user}</h1>
+        </div>
+      </div>
+      <!-- END Page Header -->
+
+      <router-view></router-view>
+
+    </main>
+    <!-- END Main Container -->
   </div>
+  <!-- END Page Container -->
+
 </template>

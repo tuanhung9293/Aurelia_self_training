@@ -1,21 +1,61 @@
 <template>
-  <div class="col-md-6 col-md-offset-3">
-    <h2>Login</h2>
-    <form name="form" submit.delegate = "login()">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" class="form-control" name="password" value.bind="userLogin.email"/>
-      </div>
+  <!-- Login Content -->
+  <div class="content overflow-hidden">
+    <div class="row">
+      <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+        <!-- Login Block -->
+        <div class="block block-themed animated fadeIn">
+          <div class="block-header bg-primary">
+            <ul class="block-options">
+              <li>
+                <a route-href="route: register" class="btn btn-link">New Account <i class="si si-plus"></i></a>
+              </li>
+            </ul>
+            <h3 class="block-title">Login</h3>
+          </div>
+          <div class="block-content block-content-full block-content-narrow">
+            <!-- Login Title -->
+            <h1 class="h2 font-w600 push-30-t push-5">Aurelia Todo App</h1>
+            <p>Welcome, please login.</p>
+            <!-- END Login Title -->
 
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" class="form-control" name="password" value.bind="userLogin.password"/>
+            <!-- Login Form -->
+            <form class="js-validation-login form-horizontal push-30-t push-50" submit.delegate = "login()">
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <div class="form-material form-material-primary floating">
+                    <input class="form-control" type="email" id="login-email" name="login-email" value.bind="userLogin.email">
+                    <label for="login-email">Email</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <div class="form-material form-material-primary floating">
+                    <input class="form-control" type="password" id="login-password" name="login-password" value.bind="userLogin.password">
+                    <label for="login-password">Password</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <label class="css-input switch switch-sm switch-primary">
+                    <input type="checkbox" id="login-remember-me" name="login-remember-me"><span></span> Remember Me?
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-xs-12 col-sm-6 col-md-4">
+                  <button class="btn btn-block btn-primary" type="submit"><i class="si si-login pull-right"></i> Log in</button>
+                </div>
+              </div>
+            </form>
+            <!-- END Login Form -->
+          </div>
+        </div>
+        <!-- END Login Block -->
       </div>
-
-      <div class="form-group">
-        <button class="btn btn-primary" type = "submit">Login</button>
-        <a route-href="route: register" class="btn btn-link" id="register-route">Register</a>
-      </div>
-    </form>
+    </div>
   </div>
+  <!-- END Login Content -->
 </template>

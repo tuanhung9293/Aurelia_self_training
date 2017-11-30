@@ -1,53 +1,56 @@
+import {inject} from 'aurelia-framework';
 import {HttpClient} from 'aurelia-http-client';
 import * as PRODUCT from './constants';
 
-let httpClient = new HttpClient();
-
-httpClient.configure(config => {
-  config
-    .withBaseUrl(PRODUCT.serverURL)
-    .withInterceptor({
-      request(message) {
-        return message;
-      },
-
-      requestError(error) {
-        throw error;
-      },
-
-      response(message) {
-        return message;
-      },
-
-      responseError(error) {
-        throw error;
-      }
-    });
-});
-
+@inject(HttpClient)
 export class AuthenService {
-  constructor(public defaultData: any, public currentUser: any) {
-    this.defaultData = {'uid': {value: null}, 'client': {value: null}, 'access-token': {value: null}};
-    this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || this.defaultData;
+  defaultData = {'uid': {value: null}, 'client': {value: null}, 'access-token': {value: null}};
+  constructor(private httpClient: HttpClient) {
+  }
+
+  configHttpClient(uid, client, token) {
+    this.httpClient.configure(config => {
+      config
+        .withBaseUrl(PRODUCT.serverURL)
+        .withHeader('Content-Type', 'application/json; charset=utf-8')
+        .withHeader('Uid', uid)
+        .withHeader('Client', client)
+        .withHeader('Access-Token', token)
+        .withInterceptor({
+          request(message) {
+            return message;
+          },
+
+          requestError(error) {
+            throw error;
+          },
+
+          response(message) {
+            return message;
+          },
+
+          responseError(error) {
+            throw error;
+          }
+        });
+    });
   }
 
   login(email: string, password: string) {
-    return httpClient.post(PRODUCT.userSignInPATH, {email: email, password: password})
+    return this.httpClient.post(PRODUCT.userSignInPATH, {email: email, password: password})
       .then((response) => {
         localStorage.setItem('currentUser', JSON.stringify(response.headers.headers));
         localStorage.setItem('authenIsOk', 'true');
-        this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
         return response;
       })
+      .then(() => this.configHttpClient(this.getUserToken()['uid'].value, this.getUserToken()['client'].value, this.getUserToken()['access-token'].value))
       .catch(this.handleError);
   }
 
   logout() {
-    // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
     localStorage.removeItem('authenIsOk');
-    // window.location.reload(true);
-    this.currentUser = this.defaultData;
+    this.configHttpClient('', '', '');
   }
 
   extractData(res: Response) {

@@ -9,6 +9,10 @@ export function configure(aurelia: Aurelia) {
 
   aurelia.use
     .standardConfiguration()
+    .plugin('jquery-validation');
+
+  aurelia.use
+    .standardConfiguration()
     .plugin('datatables');
 
   aurelia.use

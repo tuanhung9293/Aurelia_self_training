@@ -1,61 +1,101 @@
 <template>
-  <require from="./tasklists.css"></require>
+  <!-- Stats -->
+  <div class="content bg-gray-lighter border-b">
+    <div class="row items-push text-uppercase">
+      <div class="col-xs-6 col-sm-3 text-center">
+        <div class="font-w700 text-gray-darker animated fadeIn">Owner Tasklists</div>
+        <div class="text-muted animated fadeIn">
+          <small><i class="si si-calendar"></i> number</small>
+        </div>
+        <a class="h2 font-w300 text-primary animated flipInX">${generalData.allTasklistOwner}</a>
+        <!--data-toggle="countTo" data-to="35"-->
+      </div>
+      <div class="col-xs-6 col-sm-3 text-center">
+        <div class="font-w700 text-gray-darker animated fadeIn">Shared User</div>
+        <div class="text-muted animated fadeIn">
+          <small><i class="si si-calendar"></i> number</small>
+        </div>
+        <a class="h2 font-w300 text-primary animated flipInX">${generalData.userShare}</a>
+      </div>
+      <div class="col-xs-6 col-sm-3 text-center">
+        <div class="font-w700 text-gray-darker animated fadeIn">All todo</div>
+        <div class="text-muted animated fadeIn">
+          <small><i class="si si-calendar"></i> number</small>
+        </div>
+        <a class="h2 font-w300 text-primary animated flipInX">${generalData.allTodo}</a>
+      </div>
+      <div class="col-xs-6 col-sm-3 text-center">
+        <div class="font-w700 text-gray-darker animated fadeIn">All Done</div>
+        <div class="text-muted animated fadeIn">
+          <small><i class="si si-calendar"></i> number</small>
+        </div>
+        <a class="h2 font-w300 text-primary animated flipInX">${generalData.allDone}</a>
+      </div>
+    </div>
+  </div>
+  <!-- END Stats -->
 
-  <form submit.trigger="createTasklist()">
-    <input type="text"
-           value.bind="tasklistName">
-    <button type="submit"
-            class="btn btn-primary btn-sm"
-            disabled.bind="tasklistName===''"
-    >Add Tasklist</button>
-  </form>
 
-  <hr>
-
-  <table id="example" class="display" cellspacing="0" width="100%">
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>List Name</th>
-      <th>User</th>
-      <th>Share</th>
-      <th>Todo</th>
-      <th>Done</th>
-      <th>Action</th>
-    </tr>
-    </thead>
-    <tr if.bind="data.length > 0" repeat.for="item of data">
-      <td>${item.id}</td>
-      <td>${item.name}</td>
-      <td>${item.user}</td>
-      <td>${item.share}</td>
-      <td>${item.count}</td>
-      <td>${item.done}</td>
-      <td class="text-center tl_action">
-        <div if.bind="item.owner" class="action-button">
-          <button click.delegate="edit(item)">
-            <i class="glyphicon glyphicon-pencil"></i>
-          </button>
-          <button click.delegate="deleteTasklist(item.id)">
-            <i class="glyphicon glyphicon-remove"></i>
-          </button>
-          <button click.delegate="share(item)">
-            <i class="glyphicon glyphicon-share-alt"></i>
-          </button>
-          <button click.delegate="showDetail(item)">
-            <i class="glyphicon glyphicon-indent-left"></i>
-          </button>
+  <!-- Dynamic Table Full -->
+  <div class="block">
+    <div class="block-header row">
+      <h2 class="block-title col-sm-4" >Tasklist
+        <small> Dashboard</small>
+      </h2>
+      <form class="col-md-4" submit.trigger="createTasklist()">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Tasklist name ..." value.bind="tasklistName">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" type="submit" disabled.bind="tasklistName===''">Add <i class="fa fa-plus-square"></i></button>
+          </span>
         </div>
 
-        <div if.bind="(!item.owner) && (!item.is_write)">
-          <button class="btn btn-xs btn-warning" click.delegate="showDetail(item)">Read&nbsp;&nbsp;Only</button>
-        </div>
-
-        <div if.bind="(!item.owner) && (item.is_write)">
-          <button class="btn btn-xs btn-info" click.delegate="showDetail(item)">Show Detail</button>
-        </div>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+      </form>
+    </div>
+    <div class="block-content">
+      <table class="table table-bordered table-striped js-dataTable-full">
+        <thead>
+        <tr>
+          <th class="text-center">ID</th>
+          <th>List Name</th>
+          <th>User</th>
+          <th class="hidden-xs">Share</th>
+          <th class="hidden-xs">Todo</th>
+          <th class="hidden-xs">Done</th>
+          <th class="hidden-xs" style="width: 15%;">Access</th>
+          <th class="text-center" style="width: 10%;">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr repeat.for="item of data">
+          <td class="text-center">${item.id}</td>
+          <td class="font-w600">${item.name}</td>
+          <td>${item.user}</td>
+          <td class="hidden-xs">${item.share_count}</td>
+          <td class="hidden-xs">${item.todo_count}</td>
+          <td class="hidden-xs">${item.done_count}</td>
+          <td class="hidden-xs">
+              <span
+                class="label label-success ${item.access === 'Edit Only' ? 'label-warning' : ''} ${item.access === 'Read Only' ? 'label-danger' : ''}">${item.access}</span>
+          </td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="Edit Tasklist"
+                      click.delegate="edit(item)" disabled.bind="!item.owner"><i class="fa fa-pencil"></i></button>
+              <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="Share Tasklist"
+                      click.delegate="share(item)" disabled.bind="!item.owner"><i class="fa fa-share"></i></button>
+              <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="Remove Tasklist"
+                      click.delegate="deleteTasklist(item.id)" disabled.bind="!item.owner"><i
+                class="fa fa-times"></i>
+              </button>
+              <button class="btn btn-xs btn-default" type="button" data-toggle="tooltip" title="Show Tasklist"
+                      click.delegate="showDetail(item)"><i class="fa fa-list"></i></button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- END Dynamic Table Full -->
 </template>
