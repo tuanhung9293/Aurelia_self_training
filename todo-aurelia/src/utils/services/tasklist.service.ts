@@ -1,5 +1,5 @@
 import {inject} from 'aurelia-framework';
-import {HttpClient, Response} from 'aurelia-http-client';
+import {HttpClient} from 'aurelia-http-client';
 import * as PRODUCT from '../constants';
 import {AuthenService} from '../authen.service';
 
@@ -136,7 +136,7 @@ export class TasklistService {
       .catch(() => console.log('got failure'));
   }
 
-  extractData(res: Response) {
+  extractData(res) {
     if (res.status < 200 || res.status >= 300) {
       throw new Error('Bad response status: ' + res.status);
     }

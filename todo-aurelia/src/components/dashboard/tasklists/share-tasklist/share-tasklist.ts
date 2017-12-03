@@ -65,7 +65,7 @@ export class ShareTasklist {
           this.authorizedUsers[this.authorizedUsers.length - 1].user_email = email;
           console.log(`Create Authen users success`);
 
-          this.tasklist.share++;
+          this.tasklist.share_count++;
           this.users = this.users.filter(h => h.id !== user_id);
         })
       .catch(error => console.log('Create Authen users fail')
@@ -81,7 +81,7 @@ export class ShareTasklist {
           this.authorizedUsers = this.authorizedUsers.filter(h => h.user_id !== user_id);
           console.log(`Delete Authen users success`);
 
-          this.tasklist.share--
+          this.tasklist.share_count--
         })
       .catch(error => console.log('Delete Authen users fail')
     )

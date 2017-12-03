@@ -1,8 +1,5 @@
-ux-dialog-overlay.active {
-  background-color: black;
-  opacity: .65;
+.todo-task {
+  background: linear-gradient(to right, #FFB6B3 , #ffbfa7);
+  border-radius: 5px;
 }
 
-/*ux-dialog {*/
-  /*min-width: 600px;*/
-/*}*/

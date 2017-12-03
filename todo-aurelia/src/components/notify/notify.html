@@ -1,0 +1,13 @@
+<template>
+  <require from="./notify.css"></require>
+
+  <ux-dialog>
+    <ux-dialog-body>
+      <div class="${message.type}">${message.text}</div>
+    </ux-dialog-body>
+    <ux-dialog-footer>
+      <button click.delegate="controller.cancel()">Close</button>
+    </ux-dialog-footer>
+  </ux-dialog>
+</template>
+

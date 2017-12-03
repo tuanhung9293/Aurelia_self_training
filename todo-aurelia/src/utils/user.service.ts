@@ -16,23 +16,6 @@ httpClient.configure(config => {
     .withHeader('Uid', currentUser['uid'].value)
     .withHeader('Client', currentUser['client'].value)
     .withHeader('Access-Token', currentUser['access-token'].value)
-    .withInterceptor({
-      request(message) {
-        return message;
-      },
-
-      requestError(error) {
-        throw error;
-      },
-
-      response(message) {
-        return message;
-      },
-
-      responseError(error) {
-        throw error;
-      }
-    });
 });
 
 @inject(AuthenService)
@@ -43,9 +26,11 @@ export class UserService {
   createUser(user: User) {
     return httpClient.post(PRODUCT.userCreatePATH, user)
       .then(response => {
-        return JSON.parse(response.response);
+        return response;
       })
-      .catch((error) => console.log('got failure', error));
+      .catch((error) => {
+        console.log('got failure', error);
+      });
   }
 
   changePassword(changepassword: PasswordChange) {

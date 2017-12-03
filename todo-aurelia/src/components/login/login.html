@@ -1,4 +1,11 @@
 <template>
+  <require from="./login.css"></require>
+
+  <!-- Loader (wait for request respond) -->
+  <require from="../../utils/templates/loader/loader.html"></require>
+  <loader if.bind="loading"></loader>
+  <!-- END Loader -->
+
   <!-- Login Content -->
   <div class="content overflow-hidden">
     <div class="row">
@@ -23,16 +30,16 @@
             <form class="js-validation-login form-horizontal push-30-t push-50" submit.delegate = "login()">
               <div class="form-group">
                 <div class="col-xs-12">
-                  <div class="form-material form-material-primary floating">
-                    <input class="form-control" type="email" id="login-email" name="login-email" value.bind="userLogin.email">
+                  <div class="form-material form-material-primary">
+                    <input class="form-control" type="email" id="login-email" name="login-email" placeholder="Please provide your email..." value.bind="userLogin.email">
                     <label for="login-email">Email</label>
                   </div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="col-xs-12">
-                  <div class="form-material form-material-primary floating">
-                    <input class="form-control" type="password" id="login-password" name="login-password" value.bind="userLogin.password">
+                  <div class="form-material form-material-primary">
+                    <input class="form-control" type="password" id="login-password" name="login-password" placeholder="Please provide your password..." value.bind="userLogin.password">
                     <label for="login-password">Password</label>
                   </div>
                 </div>

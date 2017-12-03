@@ -1,16 +1,51 @@
 import {UserService} from '../../utils/user.service';
 import {Router} from 'aurelia-router';
 import {inject} from 'aurelia-framework';
+import {DialogService} from 'aurelia-dialog';
+
+import {Notify} from '../notify/notify';
 
 import * as jQuery from 'jquery'
 
-@inject(Router, UserService)
+@inject(Router, DialogService, UserService)
 export class Register {
   userRegister: any = {};
   loading = false;
 
   constructor(private router: Router,
+              private dialogService: DialogService,
               private userService: UserService) {
+  }
+
+  register() {
+    this.loading = true;
+    this.userService.createUser(this.userRegister)
+      .then(() => {
+        this.loading = false;
+        this.router.navigate('login');
+        this.notify('info', 'Register success, please login to use the application!');
+      })
+      .catch((error) => {
+        console.log('Register fail', error);
+        this.loading = true;
+        this.notify('error', 'Register fail, please try again!');
+      })
+  }
+
+  notify(type, text) {
+    this.dialogService.open({viewModel: Notify, model: {type: type, text: text}})
+      .whenClosed(response => {
+        if (!response.wasCancelled) {
+          console.log('OK');
+        } else {
+          console.log('Cancel');
+        }
+        console.log(response.output);
+      });
+  }
+
+  attached() {
+    this.renderRegisterPage();
   }
 
   renderRegisterPage() {
@@ -72,19 +107,5 @@ export class Register {
     jQuery(function () {
       BasePagesRegister.init();
     });
-  }
-
-  attached() {
-    this.renderRegisterPage();
-  }
-
-  register() {
-    this.loading = true;
-    this.userService.createUser(this.userRegister)
-      .then(() => {
-        alert('Register successfully, please Login.')
-        this.router.navigate('login');
-      })
-      .catch(() => alert('Register got failure!'))
   }
 }

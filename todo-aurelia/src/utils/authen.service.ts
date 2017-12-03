@@ -16,23 +16,6 @@ export class AuthenService {
         .withHeader('Uid', uid)
         .withHeader('Client', client)
         .withHeader('Access-Token', token)
-        .withInterceptor({
-          request(message) {
-            return message;
-          },
-
-          requestError(error) {
-            throw error;
-          },
-
-          response(message) {
-            return message;
-          },
-
-          responseError(error) {
-            throw error;
-          }
-        });
     });
   }
 
@@ -53,7 +36,7 @@ export class AuthenService {
     this.configHttpClient('', '', '');
   }
 
-  extractData(res: Response) {
+  extractData(res) {
     if (res.status < 200 || res.status >= 300) {
       throw new Error('Bad response status: ' + res.status);
     }

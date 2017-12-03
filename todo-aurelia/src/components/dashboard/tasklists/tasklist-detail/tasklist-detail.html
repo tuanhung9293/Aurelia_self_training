@@ -2,40 +2,54 @@
   <require from="./tasklist-detail.css"></require>
 
   <ux-dialog>
+    <ux-dialog-header>
+      ${tasklist.name}
+    </ux-dialog-header>
     <ux-dialog-body>
       <div class="row">
-        <div class="col-sm-6">
-          <h3>TODOS</h3>
-          <div class="input-group" if.bind="tasklist.is_write">
-            <form submit.trigger="addTodo(newTodo)">
-              <input type="text"
-                     value.bind="newTodo">
-              <button type="submit"
-                      class="btn btn-primary btn-sm"
-                      disabled.bind="newTodo===''"
-              >Add Todo</button>
-            </form>
-          </div>
-
-          <div [hidden]="newTodo">
-          </div>
-
-          <div [hidden]="!newTodo">
-            Typing: ${newTodo}
-          </div>
-          <br>
-          <div>
-            <div repeat.for="todo of todos">
-              <div if.bind="!todo.done" style="margin: 1.5%">
-                <button class="btn btn-info btn-xs"
-                        click.delegate="updateTodo(todo.id)"
-                        disabled.bind="!tasklist.is_write">Done
+        <div class="col-md-6">
+          <h4>TODOS</h4>
+          <form if.bind="tasklist.is_write"
+                submit.trigger="addTodo(newTodo)">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Todo name ..." value.bind="newTodo">
+              <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit" disabled.bind="newTodo===''">Add <i
+                  class="fa fa-plus-square"></i>
                 </button>
-                <span>&nbsp;${todo.name}</span>
-              </div>
+              </span>
             </div>
-          </div>
-          <br>
+          </form>
+
+          <table class="table">
+            <thead>
+            <tr>
+              <th class="text-center" style="width: 50px;">#</th>
+              <th>Name</th>
+              <th class="hidden-xs" style="width: 15%;">Access</th>
+              <th class="text-center" style="width: 100px;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr repeat.for="todo of todos" if.bind="!todo.done">
+              <td class="text-center">${todo.id}</td>
+              <td>${todo.name}</td>
+              <td class="hidden-xs">
+                <span class="label label-warning">Trial</span>
+              </td>
+              <td class="text-center">
+                <div class="btn-group">
+                  <button class="btn btn-xs btn-default"
+                          click.delegate="updateTodo(todo.id)"
+                          disabled.bind="!tasklist.is_write"
+                          type="button"
+                          data-toggle="tooltip"
+                          title="Make Done"><i class="fa fa-check-square"></i></button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
           <div>
             <button click.delegate="doneAllTodos()" class="btn btn-primary btn-sm"
                     disabled.bind="!tasklist.is_write || tasklist.count < 1">Mark all as Done
@@ -43,33 +57,50 @@
           </div>
         </div><!-- /.col-lg-6 -->
         <!--<hr class="hidden-sm-up">-->
-        <div class="col-sm-6">
-          <h3>DONE</h3>
-          <div>
-            <div repeat.for="todo of todos">
-              <div if.bind="todo.done" style="margin: 1.5%">
-                <button class="btn btn-warning btn-xs"
-                        click.delegate="deleteTodo(todo.id)"
-                        disabled.bind="!tasklist.is_write">Delete
-                </button>
-                <span>&nbsp;${todo.name}</span>
-              </div>
-            </div>
-          </div>
-          <br>
+        <div class="col-md-6">
+          <h4>DONE</h4>
+
+          <table class="table">
+            <thead>
+            <tr>
+              <th class="text-center" style="width: 50px;">#</th>
+              <th>Name</th>
+              <th class="hidden-xs" style="width: 15%;">Access</th>
+              <th class="text-center" style="width: 100px;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr repeat.for="todo of todos" if.bind="todo.done">
+              <td class="text-center">${todo.id}</td>
+              <td>${todo.name}</td>
+              <td class="hidden-xs">
+                <span class="label label-danger">Trial</span>
+              </td>
+              <td class="text-center">
+                <div class="btn-group">
+                  <button class="btn btn-xs btn-default"
+                          click.delegate="deleteTodo(todo.id)"
+                          disabled.bind="!tasklist.is_write"
+                          type="button"
+                          data-toggle="tooltip"
+                          title="Make Done"><i class="fa fa-check-square"></i></button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
           <div>
             <button click.delegate="deleteAllDones()" class="btn btn-danger btn-sm"
                     disabled.bind="!tasklist.is_write || tasklist.done < 1">Delete all Done
             </button>
           </div>
-
         </div><!-- /.col-lg-6 -->
       </div><!-- /.row -->
     </ux-dialog-body>
 
     <ux-dialog-footer>
-      <button click.delegate="controller.cancel()">Cancel</button>
-      <button click.delegate="controller.ok(rating)">Ok</button>
+      <button click.delegate="controller.cancel()">Close</button>
     </ux-dialog-footer>
   </ux-dialog>
 </template>

@@ -35,13 +35,6 @@ export class TasklistDetail {
       .then(
         data => {
           this.todos = data;
-          this.tasklist.count = 0;
-          data.forEach((item) => {
-            if (!item.done) {
-              this.tasklist.count++
-            }
-          });
-          this.tasklist.done = data.length - this.tasklist.count;
           console.log('Get todos success');
         })
       .catch(error => console.log('Get todos fail'))

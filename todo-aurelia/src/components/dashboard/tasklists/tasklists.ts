@@ -27,11 +27,143 @@ export class TaskLists {
               public userService: UserService) {
   }
 
+  created() {
+    this.getTasklists();
+    this.getUsers();
+  }
+
+  getUsers() {
+    this.userService.getUsers()
+      .then(data => this.users = data)
+      .catch(() => console.log('getUsers fail'))
+  }
+
+  getTasklists() {
+    this.tasklistService.getTasklists()
+      .then(
+        data => {
+          this.data = data;
+          console.log('Get tasklists success');
+          this.generalData.allTasklistOwner = this.data.length;
+
+          this.data.forEach((item) => {
+            this.generalData.allTodo += item.todo_count;
+            this.generalData.userShare += item.share_count;
+            this.generalData.allDone += item.done_count;
+            item.owner = true;
+            item.is_write = true;
+            item.access = 'Full Access';
+            item.user = this.userService.getCurrentUser();
+          });
+
+          this.getTasklistsAuthorized();
+        }
+      )
+      .catch((error) => console.log('getTasklists fail', error))
+  }
+
+  getTasklistsAuthorized() {
+    this.tasklistService.getTasklistsAuthorized()
+      .then(
+        data => {
+          data.forEach((item) => {
+            item.user = this.users.filter(h => h.id === item.user_id)[0].email;
+            item.access = item.is_write ? 'Edit Only' : 'Read Only';
+          });
+          this.data = this.data.concat(data);
+          console.log('getTasklistsAuthorized success');
+        }
+      )
+      .then(() => this.renderDatatable())
+      .catch(() => console.log('getTasklistsAuthorized fail'))
+  }
+
+  getTasklist(tasklist_id: number) {
+    this.tasklistService.getTasklist(tasklist_id)
+      .then(
+        data => {
+          this.data.filter(h => h.id === tasklist_id)[0].name = data.name;
+          console.log(`Get tasklist ${tasklist_id} success`);
+        }
+      )
+      .catch(() => console.log(`Get tasklist ${tasklist_id} fail`)
+      )
+  }
+
+  createTasklist() {
+    this.tasklistService.createTasklist(this.tasklistName)
+      .then(
+        response => {
+          this.data.push(response);
+          this.data[this.data.length - 1].is_write = true;
+          this.data[this.data.length - 1].owner = true;
+          this.data[this.data.length - 1].user = this.userService.getCurrentUser();
+          this.data[this.data.length - 1].authorizedUsers = [];
+
+          this.generalData.allTasklistOwner++;
+
+          this.tasklistName = '';
+          console.log('Create tasklist success');
+        }
+      )
+      .catch((error) => console.log(`Create tasklist fail`, error))
+  }
+
+  deleteTasklist(id: number): void {
+    this.tasklistService.deleteTasklist(id)
+      .then(() => {
+          this.data = this.data.filter(h => h.id !== id);
+          this.generalData.allTasklistOwner--;
+          // this.generalData.userShare -= this.data.filter(h => h.id === id)[0].share_count;
+        }
+      )
+      .catch((error) => {
+        console.log(`Delete tasklist ${id} fail`, error);
+      })
+  }
+
+  showDetail(item) {
+    this.dialogService.open({viewModel: TasklistDetail, model: item})
+      .whenClosed(response => {
+        if (!response.wasCancelled) {
+          console.log('OK');
+        } else {
+          console.log('Cancel');
+        }
+        console.log(response.output);
+      });
+  }
+
+  share(item) {
+    this.dialogService.open({viewModel: ShareTasklist, model: item})
+      .whenClosed(response => {
+        if (!response.wasCancelled) {
+          console.log('OK');
+        } else {
+          console.log('Cancel');
+        }
+        console.log(response.output);
+      });
+  }
+
+  edit(item) {
+    this.dialogService.open({viewModel: EditTasklist, model: item})
+      .whenClosed(response => {
+        if (!response.wasCancelled) {
+          item.name = response.output;
+          console.log('OK');
+        } else {
+          console.log('Cancel');
+        }
+        console.log(response.output);
+      });
+  }
+
   renderDatatable() {
     let BaseTableDatatables = function () {
       // Init full DataTable
       let initDataTableFull = function () {
-        jQuery('.js-dataTable-full').dataTable({
+        jQuery('.js-dataTable-full').DataTable({
           columnDefs: [{orderable: false, targets: [4]}],
           pageLength: 10,
           lengthMenu: [[5, 10, 15, 20], [5, 10, 15, 20]]
@@ -201,142 +333,5 @@ export class TaskLists {
     jQuery(function () {
       BaseTableDatatables.init();
     });
-  }
-
-  created() {
-    this.getTasklists();
-    this.getUsers();
-  }
-
-  getUsers() {
-    this.userService.getUsers()
-      .then(data => this.users = data)
-      .catch(() => console.log('getUsers fail'))
-  }
-
-  getTasklists() {
-    this.tasklistService.getTasklists()
-      .then(
-        data => {
-          this.data = data;
-          console.log('Get tasklists success');
-          this.generalData.allTasklistOwner = this.data.length;
-          // this.generalData.allTodo = 0;
-
-          this.data.forEach((item) => {
-            this.generalData.allTodo += item.todo_count;
-            this.generalData.userShare += item.share_count;
-            this.generalData.allDone += item.done_count;
-            item.owner = true;
-            item.is_write = true;
-            item.access = 'Full Access';
-            item.user = this.userService.getCurrentUser();
-          });
-
-          this.data.map((item, index) => {
-            // this.getAuthorizedUsers(item.id, index);
-          });
-
-          this.getTasklistsAuthorized();
-        }
-      )
-      .catch((error) => console.log('getTasklists fail', error))
-  }
-
-  getTasklistsAuthorized() {
-    this.tasklistService.getTasklistsAuthorized()
-      .then(
-        data => {
-          data.forEach((item) => {
-            item.user = this.users.filter(h => h.id === item.user_id)[0].email;
-            item.access = item.is_write ? 'Edit Only' : 'Read Only';
-          });
-          this.data = this.data.concat(data);
-          console.log('getTasklistsAuthorized success');
-        }
-      )
-      .then(() => this.renderDatatable())
-      .catch(() => console.log('getTasklistsAuthorized fail'))
-  }
-
-  getTasklist(tasklist_id: number) {
-    this.tasklistService.getTasklist(tasklist_id)
-      .then(
-        data => {
-          this.data.filter(h => h.id === tasklist_id)[0].name = data.name;
-          console.log(`Get tasklist ${tasklist_id} success`);
-        }
-      )
-      .catch(() => console.log(`Get tasklist ${tasklist_id} fail`)
-      )
-  }
-
-  createTasklist() {
-    this.tasklistService.createTasklist(this.tasklistName)
-      .then(
-        response => {
-          this.data.push(response);
-          this.data[this.data.length - 1].is_write = true;
-          this.data[this.data.length - 1].owner = true;
-          this.data[this.data.length - 1].user = this.userService.getCurrentUser();
-          this.data[this.data.length - 1].authorizedUsers = [];
-
-          this.generalData.allTasklistOwner++;
-
-          this.tasklistName = '';
-          console.log('Create tasklist success');
-        }
-      )
-      .catch(() => console.log(`Create tasklist fail`))
-  }
-
-  deleteTasklist(id: number): void {
-    this.tasklistService.deleteTasklist(id)
-      .then(() => {
-          this.data = this.data.filter(h => h.id !== id);
-          this.generalData.allTasklistOwner--;
-          // this.generalData.userShare -= this.data.filter(h => h.id === id)[0].share_count;
-        }
-      )
-      .catch((error) => {
-        console.log(`Delete tasklist ${id} fail`, error);
-      })
-  }
-
-  showDetail(item) {
-    this.dialogService.open({viewModel: TasklistDetail, model: item})
-      .whenClosed(response => {
-        if (!response.wasCancelled) {
-          console.log('OK');
-        } else {
-          console.log('Cancel');
-        }
-        console.log(response.output);
-      });
-  }
-
-  share(item) {
-    this.dialogService.open({viewModel: ShareTasklist, model: item})
-      .whenClosed(response => {
-        if (!response.wasCancelled) {
-          console.log('OK');
-        } else {
-          console.log('Cancel');
-        }
-        console.log(response.output);
-      });
-  }
-
-  edit(item) {
-    this.dialogService.open({viewModel: EditTasklist, model: item})
-      .whenClosed(response => {
-        if (!response.wasCancelled) {
-          item.name = response.output;
-          console.log('OK');
-        } else {
-          console.log('Cancel');
-        }
-        console.log(response.output);
-      });
   }
 }

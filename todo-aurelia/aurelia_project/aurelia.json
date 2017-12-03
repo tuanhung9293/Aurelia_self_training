@@ -63,7 +63,6 @@
           "aurelia-task-queue",
           "aurelia-templating",
           "aurelia-templating-binding",
-          "aurelia-fetch-client",
           "aurelia-http-client",
           {
             "name": "aurelia-templating-resources",

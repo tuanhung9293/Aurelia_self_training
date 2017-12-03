@@ -3,9 +3,9 @@ export class Tasklist {
   id: number;
   name: string;
   user: string;
-  share: number;
-  count: number;
-  done: number;
+  share_count: number;
+  todo_count: number;
+  done_count: number;
   access: string;
   authorizedUsers: Authen[];
   owner: boolean;
