@@ -4,7 +4,7 @@ import {TasklistService} from '../../../utils/services/tasklist.service'
 import {UserService} from '../../../utils/user.service'
 import {User, Tasklist} from '../../../utils/models'
 
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {TasklistDetail} from './tasklist-detail/tasklist-detail';
 import {ShareTasklist} from './share-tasklist/share-tasklist';
@@ -12,7 +12,7 @@ import {EditTasklist} from './edit-tasklist/edit-tasklist';
 
 import * as jQuery from 'jquery';
 
-@inject(Router, DialogService, TasklistService, UserService)
+@autoinject()
 export class TaskLists {
   data: Tasklist[] = [];
   users: User[];

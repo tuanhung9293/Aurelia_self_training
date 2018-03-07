@@ -1,7 +1,7 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {DialogController} from 'aurelia-dialog';
 
-@inject(DialogController)
+@autoinject()
 export class Notify {
   message: object;
 

@@ -1,9 +1,9 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {DialogController} from 'aurelia-dialog';
 import {User, Tasklist} from '../../../../utils/models';
 import {TasklistService} from '../../../../utils/services/tasklist.service';
 
-@inject(DialogController, TasklistService)
+@autoinject()
 export class EditTasklist {
   tasklist: Tasklist;
   rename: string;

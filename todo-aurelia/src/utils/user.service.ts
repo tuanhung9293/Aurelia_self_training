@@ -1,4 +1,4 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {User, PasswordChange} from './models';
 import {HttpClient} from 'aurelia-http-client';
 import {AuthenService} from './authen.service';
@@ -18,7 +18,7 @@ httpClient.configure(config => {
     .withHeader('Access-Token', currentUser['access-token'].value)
 });
 
-@inject(AuthenService)
+@autoinject()
 export class UserService {
   constructor(private authenService: AuthenService) {
   }

@@ -1,10 +1,10 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {HttpClient} from 'aurelia-http-client';
 import * as PRODUCT from '../constants';
 import {AuthenService} from '../authen.service';
 
 
-@inject(AuthenService, HttpClient)
+@autoinject()
 export class TasklistService {
   constructor(private authenService: AuthenService, private httpClient: HttpClient) {
   }

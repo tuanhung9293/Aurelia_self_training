@@ -1,8 +1,8 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {HttpClient} from 'aurelia-http-client';
 import * as PRODUCT from './constants';
 
-@inject(HttpClient)
+@autoinject()
 export class AuthenService {
   defaultData = {'uid': {value: null}, 'client': {value: null}, 'access-token': {value: null}};
   constructor(private httpClient: HttpClient) {

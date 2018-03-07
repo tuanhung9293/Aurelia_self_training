@@ -1,13 +1,13 @@
+import {autoinject} from 'aurelia-framework';
 import {UserService} from '../../utils/user.service';
 import {Router} from 'aurelia-router';
-import {inject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 
 import {Notify} from '../notify/notify';
 
 import * as jQuery from 'jquery'
 
-@inject(Router, DialogService, UserService)
+@autoinject()
 export class Register {
   userRegister: any = {};
   loading = false;

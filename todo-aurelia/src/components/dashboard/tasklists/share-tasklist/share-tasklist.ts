@@ -1,10 +1,10 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {DialogController} from 'aurelia-dialog';
 import {User, Authen, Tasklist} from '../../../../utils/models';
 import {UserService} from '../../../../utils/user.service';
 import {TasklistService} from '../../../../utils/services/tasklist.service';
 
-@inject(DialogController, UserService, TasklistService)
+@autoinject()
 export class ShareTasklist {
   tasklist: Tasklist;
   authorizedUsers: Authen[];

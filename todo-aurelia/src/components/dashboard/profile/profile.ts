@@ -1,8 +1,8 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {UserService} from '../../../utils/user.service'
 import {Router} from 'aurelia-router';
 
-@inject(Router, UserService)
+@autoinject()
 export class Profile {
   newPassword: any = {};
   current_user: string;

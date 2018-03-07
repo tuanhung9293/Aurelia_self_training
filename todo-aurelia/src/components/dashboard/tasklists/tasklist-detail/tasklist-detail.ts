@@ -1,4 +1,4 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {DialogController} from 'aurelia-dialog';
 import {Todo, Tasklist} from '../../../../utils/models';
 import {TasklistService} from '../../../../utils/services/tasklist.service';
@@ -12,7 +12,7 @@ const mockdata: Todo[] = [
   {id: 6, name: 'todo6', done: false},
 ];
 
-@inject(DialogController, TasklistService)
+@autoinject()
 export class TasklistDetail {
   tasklist: Tasklist;
   todos: Todo[] = [];

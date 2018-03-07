@@ -1,4 +1,4 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {AuthenService} from '../../utils/authen.service';
 import {Router} from 'aurelia-router';
 import {DialogService} from 'aurelia-dialog';
@@ -7,7 +7,7 @@ import {Notify} from '../notify/notify';
 
 import * as jQuery from 'jquery';
 
-@inject(Router, DialogService, AuthenService)
+@autoinject()
 export class Login {
   userLogin: any = {};
   loading = false;
