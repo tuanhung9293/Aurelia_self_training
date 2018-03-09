@@ -2,23 +2,20 @@ import {Aurelia} from 'aurelia-framework'
 import environment from './environment';
 import {PLATFORM} from 'aurelia-pal';
 
-export function configure(aurelia: Aurelia) {
+export async function configure(aurelia: Aurelia): Promise<void> {
   aurelia.use
     .standardConfiguration()
-    .feature('resources');
 
-  aurelia.use
-    .standardConfiguration()
-    .plugin('jquery-validation');
+    .plugin(PLATFORM.moduleName('jquery-validation'))
 
-  aurelia.use
-    .standardConfiguration()
-    .plugin('datatables');
+    .plugin(PLATFORM.moduleName('datatables'))
 
-  aurelia.use
-    .standardConfiguration()
-    .developmentLogging()
-    .plugin(PLATFORM.moduleName('aurelia-dialog'));
+    .plugin(PLATFORM.moduleName('aurelia-dialog'), config => {
+      config.useDefaults();
+      config.settings.startingZIndex = 1005;
+      config.settings.lock = true;
+      config.settings.centerHorizontalOnly = false;
+    })
 
   if (environment.debug) {
     aurelia.use.developmentLogging();
@@ -28,5 +25,6 @@ export function configure(aurelia: Aurelia) {
     aurelia.use.plugin('aurelia-testing');
   }
 
-  aurelia.start().then(() => aurelia.setRoot());
+  await aurelia.start();
+  await aurelia.setRoot(PLATFORM.moduleName('app.vm'));
 }
