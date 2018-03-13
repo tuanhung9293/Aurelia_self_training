@@ -1,20 +1,40 @@
-import {autoinject} from 'aurelia-framework';
-import {UserService} from '../../utils/user.service';
-import {Router} from 'aurelia-router';
-import {DialogService} from 'aurelia-dialog';
-
-import {Notify} from '../notify/notify';
-
+import { autoinject } from 'aurelia-framework';
+import {
+  ValidationController,
+  ValidationControllerFactory,
+  validateTrigger,
+  ValidationRules,
+  RenderedError,
+  Rule
+} from 'aurelia-validation';
+import { validateFilledFieldsWithValidationRules, controllerValidByRules } from '../../utils/validation.utils';
+import { RegisterModel } from '../../utils/models/register-model';
+import { UserService } from '../../utils/user.service';
+import { Router } from 'aurelia-router';
+import { DialogService } from 'aurelia-dialog';
+import { Notify } from '../notify/notify';
 import * as jQuery from 'jquery'
 
 @autoinject()
 export class Register {
-  userRegister: any = {};
+  userRegister!: RegisterModel;
   loading = false;
 
-  constructor(private router: Router,
-              private dialogService: DialogService,
-              private userService: UserService) {
+  public emailErrors!: RenderedError[];
+  public passwordErrors!: RenderedError[];
+  public confirmPasswordErrors!: RenderedError[];
+
+  public validationController: ValidationController;
+  private rules!: Rule<RegisterModel, any>[][];
+
+  constructor(
+    private router: Router,
+    private dialogService: DialogService,
+    private userService: UserService,
+    private validationControllerFactory: ValidationControllerFactory
+  ) {
+    this.validationController = this.validationControllerFactory.createForCurrentScope();
+    this.validationController.validateTrigger = validateTrigger.changeOrBlur;
   }
 
   register() {
@@ -44,68 +64,43 @@ export class Register {
       });
   }
 
-  attached() {
-    this.renderRegisterPage();
+  public activate(): void {
+    this.initUserRegister();
+
+    this.setupValidationRules();
+    validateFilledFieldsWithValidationRules(this.rules, this.userRegister, this.validationController);
   }
 
-  renderRegisterPage() {
-    let BasePagesRegister = function () {
-      // Init Register Form Validation, for more examples you can check out https://github.com/jzaefferer/jquery-validation
-      let initValidationRegister = function () {
-        jQuery('.js-validation-register').validate({
-          errorClass: 'help-block text-right animated fadeInDown',
-          errorElement: 'div',
-          errorPlacement: function (error, e) {
-            jQuery(e).parents('.form-group > div').append(error);
-          },
-          highlight: function (e) {
-            jQuery(e).closest('.form-group').removeClass('has-error').addClass('has-error');
-            jQuery(e).closest('.help-block').remove();
-          },
-          success: function (e) {
-            jQuery(e).closest('.form-group').removeClass('has-error');
-            jQuery(e).closest('.help-block').remove();
-          },
-          rules: {
-            'register-email': {
-              required: true,
-              email: true
-            },
-            'register-password': {
-              required: true,
-              minlength: 8
-            },
-            'register-password2': {
-              required: true,
-              equalTo: '#register-password'
-            }
-          },
-          messages: {
-            'register-email': 'Please enter a valid email address',
-            'register-password': {
-              required: 'Please provide a password',
-              minlength: 'Your password must be at least 8 characters long'
-            },
-            'register-password2': {
-              required: 'Please provide a password',
-              minlength: 'Your password must be at least 8 characters long',
-              equalTo: 'Please enter the same password as above'
-            }
-          }
-        });
-      };
+  public validateEmail(): void {
+    validateFilledFieldsWithValidationRules(this.rules, this.userRegister, this.validationController, 'email');
+  }
 
-      return {
-        init: function () {
-          // Init Register Form Validation
-          initValidationRegister();
-        }
-      };
-    }();
+  public validatePassword(): void {
+    validateFilledFieldsWithValidationRules(this.rules, this.userRegister, this.validationController, 'password');
+    this.setupValidationRules();
+  }
 
-    // Initialize when page loads
-    jQuery(function () {
-      BasePagesRegister.init();
-    });
+  public validateConfirmPassword(): void {
+    validateFilledFieldsWithValidationRules(this.rules, this.userRegister, this.validationController, 'confirmPassword');
+  }
+
+  private setupValidationRules(): void {
+    this.rules = ValidationRules
+      .ensure((userRegister: RegisterModel) => userRegister.email)
+      .required().withMessage('Please provide an email')
+      .satisfiesRule('customEmail').withMessage('Please enter a valid email address')
+
+      .ensure((userRegister: RegisterModel) => userRegister.password)
+      .required().withMessage('Please provide a password')
+      .minLength(8).withMessage('Your password must be at least 8 characters long')
+
+      .ensure((userRegister: RegisterModel) => userRegister.confirmPassword)
+      .equals(this.userRegister.password).withMessage('Please enter the same password as above')
+
+      .on(this.userRegister).rules;
+  }
+
+  private initUserRegister(): void {
+    this.userRegister = new RegisterModel();
   }
 }

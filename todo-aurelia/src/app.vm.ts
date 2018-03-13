@@ -5,7 +5,7 @@ import { customEmailValidationRule } from './rules/custom-email.rule';
 
 @autoinject()
 export class AppViewModel {
-    private router: Router;
+    private router!: Router;
 
     constructor() {
         this.configureValidationRules();

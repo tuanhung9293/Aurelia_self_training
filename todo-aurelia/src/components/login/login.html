@@ -31,16 +31,34 @@
               <div class="form-group">
                 <div class="col-xs-12">
                   <div class="form-material form-material-primary">
-                    <input class="form-control" type="email" id="login-email" name="login-email" placeholder="Please provide your email..." value.bind="userLogin.email">
-                    <label for="login-email">Email</label>
+                    <input-field
+                      type="text"
+                      input-id="login-form-email"
+                      label="Email"
+                      input-placeholder="Please provide your Email..."
+                      input-value.bind="userLogin.email & validateManually"
+                      validate-on-change.call="validateEmail()"
+                      validate-on-blur.call="validateEmail()"
+                      validation-errors.bind="emailErrors"
+                      errors.bind="emailErrors">
+                    </input-field>
                   </div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="col-xs-12">
                   <div class="form-material form-material-primary">
-                    <input class="form-control" type="password" id="login-password" name="login-password" placeholder="Please provide your password..." value.bind="userLogin.password">
-                    <label for="login-password">Password</label>
+                    <input-field
+                      type="password"
+                      input-id="login-form-password"
+                      label="Password"
+                      input-placeholder="Please provide your Password..."
+                      input-value.bind="userLogin.password & validateManually"
+                      validate-on-change.call="validatePassword()"
+                      validate-on-blur.call="validatePassword()"
+                      validation-errors.bind="passwordErrors"
+                      errors.bind="passwordErrors">
+                    </input-field>
                   </div>
                 </div>
               </div>
@@ -53,7 +71,7 @@
               </div>
               <div class="form-group">
                 <div class="col-xs-12 col-sm-6 col-md-4">
-                  <button class="btn btn-block btn-primary" type="submit"><i class="si si-login pull-right"></i> Log in</button>
+                  <button class="btn btn-block btn-primary" type="submit" disabled.bind="validationController.errors.length"><i class="si si-login pull-right"></i> Log in</button>
                 </div>
               </div>
             </form>

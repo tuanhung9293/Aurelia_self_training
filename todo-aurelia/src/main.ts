@@ -1,6 +1,13 @@
+/// <reference types="aurelia-loader-webpack/src/webpack-hot-interface"/>
+
 import {Aurelia} from 'aurelia-framework'
 import environment from './environment';
 import {PLATFORM} from 'aurelia-pal';
+
+/**
+ * Polyfills
+ */
+import './utils/polyfills.utils';
 
 export async function configure(aurelia: Aurelia): Promise<void> {
   aurelia.use
@@ -10,12 +17,14 @@ export async function configure(aurelia: Aurelia): Promise<void> {
 
     .plugin(PLATFORM.moduleName('datatables'))
 
-    .plugin(PLATFORM.moduleName('aurelia-dialog'), config => {
-      config.useDefaults();
-      config.settings.startingZIndex = 1005;
-      config.settings.lock = true;
-      config.settings.centerHorizontalOnly = false;
-    })
+    // .plugin(PLATFORM.moduleName('aurelia-dialog'), config => {
+    //   config.useDefaults();
+    //   config.settings.startingZIndex = 1005;
+    //   config.settings.lock = true;
+    //   config.settings.centerHorizontalOnly = false;
+    // })
+    .plugin('aurelia-validation')
+    .feature(PLATFORM.moduleName('./utils/templates/index'));
 
   if (environment.debug) {
     aurelia.use.developmentLogging();

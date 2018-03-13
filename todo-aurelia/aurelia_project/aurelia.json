@@ -93,7 +93,9 @@
           },
           "jquery-validation",
           "datatables",
-          "text"
+          "text",
+          "typescript",
+          "aurelia-loader-webpack"
         ]
       }
     ],

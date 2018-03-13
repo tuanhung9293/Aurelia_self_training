@@ -1,0 +1,20 @@
+<template>
+  <div class="${ errors.length ? 'has-error' : '' }">
+      <div class="form-material" data-init="auto">
+        <input
+          type="${type}"
+          id="${inputId}"
+          class="form-control ${ errors.length ? 'invalid invalid--inline' : '' } ${ inputValid ? 'valid' : '' }"
+          placeholder="${inputPlaceholder}"
+          value.bind="inputValue"
+          change.delegate="onChange()"
+          blur.delegate="onBlur()">
+        <label for="${inputId}">${label}</label>
+      </div>
+      <!-- invalid -->
+      <div class="help-block text-right animated fadeInDown" repeat.for="errorInfo of errors">
+        ${errorInfo.error.message}
+      </div>
+  </div>
+</template>
+  

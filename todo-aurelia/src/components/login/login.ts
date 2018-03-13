@@ -1,4 +1,14 @@
 import {autoinject} from 'aurelia-framework';
+import {
+  ValidationController,
+  ValidationControllerFactory,
+  validateTrigger,
+  ValidationRules,
+  RenderedError,
+  Rule
+} from 'aurelia-validation';
+import { validateFilledFieldsWithValidationRules, controllerValidByRules } from '../../utils/validation.utils';
+import { User } from '../../utils/models/user';
 import {AuthenService} from '../../utils/authen.service';
 import {Router} from 'aurelia-router';
 import {DialogService} from 'aurelia-dialog';
@@ -9,12 +19,24 @@ import * as jQuery from 'jquery';
 
 @autoinject()
 export class Login {
-  userLogin: any = {};
+  userLogin!: User;
   loading = false;
 
-  constructor(private router: Router,
-              public dialogService: DialogService,
-              private authenService: AuthenService) {
+  public emailErrors!: RenderedError[];
+  public passwordErrors!: RenderedError[];
+
+  private validationController: ValidationController;
+  private rules!: Rule<User, any>[][];
+
+  constructor(
+    private router: Router,
+    public dialogService: DialogService,
+    private authenService: AuthenService,
+    private validationControllerFactory: ValidationControllerFactory
+  ) 
+  {
+    this.validationController = this.validationControllerFactory.createForCurrentScope();
+    this.validationController.validateTrigger = validateTrigger.changeOrBlur;
   }
 
   created() {
@@ -48,59 +70,33 @@ export class Login {
       });
   }
 
-  attached() {
-    this.renderLoginPage();
+  // Validation
+  public activate(): void {
+    this.initUserLogin();
+    this.setupValidationRules();
+    validateFilledFieldsWithValidationRules(this.rules, this.userLogin, this.validationController);
   }
 
-  renderLoginPage() {
-    let BasePagesLogin = function () {
-      let initValidationLogin = function () {
-        jQuery('.js-validation-login').validate({
-          errorClass: 'help-block text-right animated fadeInDown',
-          errorElement: 'div',
-          errorPlacement: function (error, e) {
-            jQuery(e).parents('.form-group > div').append(error);
-          },
-          highlight: function (e) {
-            jQuery(e).closest('.form-group').removeClass('has-error').addClass('has-error');
-            jQuery(e).closest('.help-block').remove();
-          },
-          success: function (e) {
-            jQuery(e).closest('.form-group').removeClass('has-error');
-            jQuery(e).closest('.help-block').remove();
-          },
-          rules: {
-            'login-email': {
-              required: true,
-              email: true
-            },
-            'login-password': {
-              required: true,
-              minlength: 8
-            }
-          },
-          messages: {
-            'login-email': 'Please enter a valid email address',
-            'login-password': {
-              required: 'Please provide a password',
-              minlength: 'Your password must be at least 8 characters long'
-            }
-          }
-        });
-      };
-
-      return {
-        init: function () {
-          // Init Login Form Validation
-          initValidationLogin();
-        }
-      };
-    }();
-
-    // Initialize when page loads
-    jQuery(function () {
-      BasePagesLogin.init();
-    });
+  public validateEmail(): void {
+    validateFilledFieldsWithValidationRules(this.rules, this.userLogin, this.validationController, 'email');
   }
 
+  public validatePassword(): void {
+    validateFilledFieldsWithValidationRules(this.rules, this.userLogin, this.validationController, 'password');
+  }
+
+  private setupValidationRules(): void {
+    this.rules = ValidationRules
+      .ensure((userLogin: User) => userLogin.email)
+        .required().withMessage('Please provide an email')
+        .satisfiesRule('customEmail').withMessage('Please enter a valid email address')
+      .ensure((userLogin: User) => userLogin.password)
+        .required().withMessage('Please provide a password')
+        .minLength(8).withMessage('Your password must be at least 8 characters long')
+      .on(this.userLogin).rules;
+  }
+
+  private initUserLogin(): void {
+    this.userLogin = new User;
+  }
 }

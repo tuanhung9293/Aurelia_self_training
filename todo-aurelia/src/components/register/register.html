@@ -20,34 +20,55 @@
             <!-- END Register Title -->
 
             <!-- Register Form -->
-            <form class="js-validation-register form-horizontal push-50-t push-50" submit.delegate = "register()">
+            <form class="js-validation-register form-horizontal push-50-t push-50" submit.delegate="register()">
               <div class="form-group">
                 <div class="col-xs-12">
                   <div class="form-material form-material-success">
-                    <input class="form-control" type="email" id="register-email" name="register-email" placeholder="Please provide your email" value.bind="userRegister.email">
-                    <label for="register-email">Email</label>
+                    <input-field input-id="register-form-email"
+                      label="Email"
+                      input-placeholder="Please fill in your email"
+                      input-value.bind="userRegister.email & validateManually"
+                      validate-on-change.call="validateEmail()"
+                      validate-on-blur.call="validateEmail()"
+                      validation-errors.bind="emailErrors"
+                      errors.bind="emailErrors">
+                    </input-field>
                   </div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="col-xs-12">
                   <div class="form-material form-material-success">
-                    <input class="form-control" type="password" id="register-password" name="register-password" placeholder="Choose a strong password.." value.bind="userRegister.password">
-                    <label for="register-password">Password</label>
+                    <input-field input-id="register-form-password"
+                      label="Password"
+                      input-placeholder="Choose a strong password.."
+                      input-value.bind="userRegister.password & validateManually"
+                      validate-on-change.call="validatePassword()"
+                      validate-on-blur.call="validatePassword()"
+                      validation-errors.bind="passwordErrors"
+                      errors.bind="passwordErrors">
+                    </input-field>
                   </div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="col-xs-12">
                   <div class="form-material form-material-success">
-                    <input class="form-control" type="password" id="register-password2" name="register-password2" placeholder="..and confirm it">
-                    <label for="register-password2">Confirm Password</label>
+                    <input-field input-id="register-form-confirm-password"
+                      label="Confirm Password"
+                      input-placeholder="..and confirm it"
+                      input-value.bind="userRegister.confirmPassword & validateManually"
+                      validate-on-change.call="validateConfirmPassword()"
+                      validate-on-blur.call="validateConfirmPassword()"
+                      validation-errors.bind="confirmPasswordErrors"
+                      errors.bind="confirmPasswordErrors">
+                    </input-field>
                   </div>
                 </div>
               </div>
               <div class="form-group">
                 <div class="col-xs-12 col-sm-6 col-md-5">
-                  <button class="btn btn-block btn-success" type="submit"><i class="fa fa-plus pull-right"></i> Sign Up</button>
+                  <button class="btn btn-block btn-success" type="submit" disabled.bind="validationController.errors.length"><i class="fa fa-plus pull-right"></i> Sign Up</button>
                 </div>
               </div>
             </form>
