@@ -9,22 +9,144 @@ import {DialogService} from 'aurelia-dialog';
 import {TasklistDetail} from './tasklist-detail/tasklist-detail';
 import {ShareTasklist} from './share-tasklist/share-tasklist';
 import {EditTasklist} from './edit-tasklist/edit-tasklist';
-
-import * as jQuery from 'jquery';
+import { start } from 'repl';
 
 @autoinject()
 export class TaskLists {
-  data: Tasklist[] = [];
+  data!: Tasklist[];
+
+  numberRow: number;
+  currentPageNumber: number = 1;
+  maxPage: number;
+  secondIndex: number | string;
+  nearEndIndex: number | string;
+  currentPages!: Tasklist[];
+  optionData = [
+    { id: 0, value: 5 },
+    { id: 1, value: 10 },
+    { id: 2, value: 20 },
+  ];
+
+  
+  paginationArray: Array<{ value: string, disabled: boolean, active: boolean }> = [];
+
   users: User[];
   tasklistName: string = '';
   generalData: any = {
     allTasklistOwner: 0, userShare: 0, allTodo:0, allDone:0
   };
 
-  constructor(private router: Router,
-              public dialogService: DialogService,
-              public tasklistService: TasklistService,
-              public userService: UserService) {
+  private increase: number = -1;
+
+  constructor(
+    private router: Router,
+    public dialogService: DialogService,
+    public tasklistService: TasklistService,
+    public userService: UserService
+  ) {
+  }
+
+  public changePaginationArray(): void {
+    if (this.currentPageNumber > this.maxPage) {
+      this.currentPageNumber = 1;
+      this.slicePage();
+    }
+    this.paginationArray=[];
+    if (this.maxPage < 8) {
+      for (let i = 1; i <= this.maxPage; i++) {
+        this.paginationArray.push({
+          value: i.toString(),
+          active: i == this.currentPageNumber,
+          disabled: false
+        })
+      }
+    }
+    else {
+      if (this.currentPageNumber < 5) {
+        for (let i = 1; i <= 7; i++) {
+          let defineValue = () => {
+            if (i==6) return '...'
+            if (i==7) return this.maxPage.toString();
+            return i.toString();
+          }
+          this.paginationArray.push({
+            value: defineValue(),
+            active: i == this.currentPageNumber,
+            disabled: defineValue() == '...'
+          })
+        }
+      }
+
+      if (this.currentPageNumber >= 5 && this.currentPageNumber < this.maxPage - 3) {
+        for (let i = this.currentPageNumber - 3; i <= this.currentPageNumber + 3; i++) {
+          let defineValue = () => {
+            if (i == this.currentPageNumber - 3) return '1';
+            if (i == this.currentPageNumber - 2 || i == this.currentPageNumber + 2) return '...'
+            if (i == this.currentPageNumber + 3) return this.maxPage.toString();
+            return i.toString();
+          }
+          this.paginationArray.push({
+            value: defineValue(),
+            active: i == this.currentPageNumber,
+            disabled: defineValue() == '...'
+          })
+        }
+      }
+
+      if (this.currentPageNumber >= this.maxPage - 3) {
+        for (let i = this.maxPage - 6; i <= this.maxPage; i++) {
+          let defineValue = () => {
+            if (i==this.maxPage - 6) return '1'
+            if (i==this.maxPage - 5) return '...'
+            return i.toString();
+          }
+          this.paginationArray.push({
+            value: defineValue(),
+            active: i == this.currentPageNumber,
+            disabled: defineValue() == '...'
+          })
+        }
+      }
+    }
+  }
+
+  public slicePage(): void {
+    setTimeout(() => {
+      this.maxPage = Math.ceil(this.data.length / this.numberRow);          
+      let startIndex = this.numberRow*(this.currentPageNumber-1);
+      let endIndex = startIndex + this.numberRow;
+      this.currentPages = this.data.slice(startIndex, endIndex);
+      this.changePaginationArray();
+    });
+  }
+
+  public goToPage(pageNumber): void {
+    if (pageNumber === '...') return;
+    this.currentPageNumber = +pageNumber;
+    this.slicePage();
+  }
+
+  public previousPage(): void {
+    this.currentPageNumber--;
+    this.slicePage();
+  }
+
+  public nextPage(): void {
+    this.currentPageNumber++;
+    this.slicePage();
+  }
+
+  public atached(): void {
+    this.slicePage();
+  }
+
+  sortData(field: string): void {
+    this.increase = - this.increase;
+    this.data.sort((a, b) => {
+      if (a[field] > b[field]) return this.increase;
+      if (a[field] < b[field]) return - this.increase;
+    });
+    this.slicePage();
   }
 
   created() {
@@ -74,7 +196,10 @@ export class TaskLists {
           console.log('getTasklistsAuthorized success');
         }
       )
-      .then(() => this.renderDatatable())
+      .then(() => {
+        this.slicePage();
+      }
+    )
       .catch(() => console.log('getTasklistsAuthorized fail'))
   }
 
@@ -106,6 +231,9 @@ export class TaskLists {
           console.log('Create tasklist success');
         }
       )
+      .then(() => {
+        this.goToPage(Math.ceil(this.data.length / this.numberRow));
+      })
       .catch((error) => console.log(`Create tasklist fail`, error))
   }
 
@@ -157,181 +285,5 @@ export class TaskLists {
         }
         console.log(response.output);
       });
-  }
-
-  renderDatatable() {
-    let BaseTableDatatables = function () {
-      // Init full DataTable
-      let initDataTableFull = function () {
-        jQuery('.js-dataTable-full').DataTable({
-          columnDefs: [{orderable: false, targets: [4]}],
-          pageLength: 10,
-          lengthMenu: [[5, 10, 15, 20], [5, 10, 15, 20]]
-        });
-      };
-
-      // DataTables Bootstrap integration
-      let bsDataTables = function () {
-        let $DataTable = jQuery.fn.dataTable;
-
-        // Set the defaults for DataTables init
-        jQuery.extend(true, $DataTable.defaults, {
-          dom: "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
-          "<'row'<'col-sm-12'tr>>" +
-          "<'row'<'col-sm-6'i><'col-sm-6'p>>",
-          renderer: 'bootstrap',
-          oLanguage: {
-            sLengthMenu: "_MENU_",
-            sInfo: "Showing <strong>_START_</strong>-<strong>_END_</strong> of <strong>_TOTAL_</strong>",
-            oPaginate: {
-              sPrevious: '<i class="fa fa-angle-left"></i>',
-              sNext: '<i class="fa fa-angle-right"></i>'
-            }
-          }
-        });
-
-        // Default class modification
-        jQuery.extend($DataTable.ext.classes, {
-          sWrapper: "dataTables_wrapper form-inline dt-bootstrap",
-          sFilterInput: "form-control",
-          sLengthSelect: "form-control"
-        });
-
-        // Bootstrap paging button renderer
-        $DataTable.ext.renderer.pageButton.bootstrap = function (settings, host, idx, buttons, page, pages) {
-          let api = new $DataTable.Api(settings);
-          let classes = settings.oClasses;
-          let lang = settings.oLanguage.oPaginate;
-          let btnDisplay, btnClass;
-
-          let attach = function (container, buttons) {
-            let i, ien, node, button;
-            let clickHandler = function (e) {
-              e.preventDefault();
-              if (!jQuery(e.currentTarget).hasClass('disabled')) {
-                api.page(e.data.action).draw(false);
-              }
-            };
-
-            for (i = 0, ien = buttons.length; i < ien; i++) {
-              button = buttons[i];
-
-              if (jQuery.isArray(button)) {
-                attach(container, button);
-              }
-              else {
-                btnDisplay = '';
-                btnClass = '';
-
-                switch (button) {
-                  case 'ellipsis':
-                    btnDisplay = '&hellip;';
-                    btnClass = 'disabled';
-                    break;
-
-                  case 'first':
-                    btnDisplay = lang.sFirst;
-                    btnClass = button + (page > 0 ? '' : ' disabled');
-                    break;
-
-                  case 'previous':
-                    btnDisplay = lang.sPrevious;
-                    btnClass = button + (page > 0 ? '' : ' disabled');
-                    break;
-
-                  case 'next':
-                    btnDisplay = lang.sNext;
-                    btnClass = button + (page < pages - 1 ? '' : ' disabled');
-                    break;
-
-                  case 'last':
-                    btnDisplay = lang.sLast;
-                    btnClass = button + (page < pages - 1 ? '' : ' disabled');
-                    break;
-
-                  default:
-                    btnDisplay = button + 1;
-                    btnClass = page === button ?
-                      'active' : '';
-                    break;
-                }
-
-                if (btnDisplay) {
-                  node = jQuery('<li>', {
-                    'class': classes.sPageButton + ' ' + btnClass,
-                    'aria-controls': settings.sTableId,
-                    'tabindex': settings.iTabIndex,
-                    'id': idx === 0 && typeof button === 'string' ?
-                      settings.sTableId + '_' + button :
-                      null
-                  })
-                    .append(jQuery('<a>', {
-                        'href': '#'
-                      })
-                        .html(btnDisplay)
-                    )
-                    .appendTo(container);
-
-                  settings.oApi._fnBindAction(
-                    node, {action: button}, clickHandler
-                  );
-                }
-              }
-            }
-          };
-
-          attach(
-            jQuery(host).empty().html('<ul class="pagination"/>').children('ul'),
-            buttons
-          );
-        };
-
-        // TableTools Bootstrap compatibility - Required TableTools 2.1+
-        if ($DataTable.TableTools) {
-          // Set the classes that TableTools uses to something suitable for Bootstrap
-          jQuery.extend(true, $DataTable.TableTools.classes, {
-            "container": "DTTT btn-group",
-            "buttons": {
-              "normal": "btn btn-default",
-              "disabled": "disabled"
-            },
-            "collection": {
-              "container": "DTTT_dropdown dropdown-menu",
-              "buttons": {
-                "normal": "",
-                "disabled": "disabled"
-              }
-            },
-            "print": {
-              "info": "DTTT_print_info"
-            },
-            "select": {
-              "row": "active"
-            }
-          });
-
-          // Have the collection use a bootstrap compatible drop down
-          jQuery.extend(true, $DataTable.TableTools.DEFAULTS.oTags, {
-            "collection": {
-              "container": "ul",
-              "button": "li",
-              "liner": "a"
-            }
-          });
-        }
-      };
-
-      return {
-        init: function () {
-          bsDataTables();
-          initDataTableFull();
-        }
-      };
-    }();
-
-    // Initialize when page loads
-    jQuery(function () {
-      BaseTableDatatables.init();
-    });
   }
 }

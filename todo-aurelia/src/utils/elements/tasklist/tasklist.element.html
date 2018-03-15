@@ -1,0 +1,48 @@
+<template>  
+  <td class="text-center">${tasklist.id}</td>
+  <td class="font-w600">${tasklist.name}</td>
+  <td>${tasklist.user}</td>
+  <td class="hidden-xs">${tasklist.share_count}</td>
+  <td class="hidden-xs">${tasklist.todo_count}</td>
+  <td class="hidden-xs">${tasklist.done_count}</td>
+  <td class="hidden-xs">
+    <span class="label label-success ${tasklist.access === 'Edit Only' ? 'label-warning' : ''} ${tasklist.access === 'Read Only' ? 'label-danger' : ''}">${tasklist.access}</span>
+  </td>
+
+  <td class="text-center">
+    <div class="btn-group">
+      <button class="btn btn-xs btn-default"
+        type="button"
+        data-toggle="tooltip"
+        title="Edit Tasklist"
+        click.delegate="edit(tasklist)"
+        disabled.bind="!tasklist.owner">
+        <i class="fa fa-pencil"></i>
+      </button>
+      <button class="btn btn-xs btn-default"
+        type="button"
+        data-toggle="tooltip"
+        title="Share Tasklist"
+        click.delegate="share(tasklist)"
+        disabled.bind="!tasklist.owner">
+        <i class="fa fa-share"></i>
+      </button>
+      <button class="btn btn-xs btn-default"
+        type="button"
+        data-toggle="tooltip"
+        title="Remove Tasklist"
+        click.delegate="deleteTasklist(tasklist.id)"
+        disabled.bind="!tasklist.owner">
+        <i class="fa fa-times"></i>
+      </button>
+      <button class="btn btn-xs btn-default"
+        type="button"
+        data-toggle="tooltip"
+        title="Show Tasklist"
+        click.delegate="showDetail(tasklist)">
+        <i class="fa fa-list"></i>
+      </button>
+    </div>
+  </td>
+</template>
+

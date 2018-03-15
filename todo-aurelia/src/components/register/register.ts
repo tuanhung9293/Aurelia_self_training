@@ -13,7 +13,6 @@ import { UserService } from '../../utils/user.service';
 import { Router } from 'aurelia-router';
 import { DialogService } from 'aurelia-dialog';
 import { Notify } from '../notify/notify';
-import * as jQuery from 'jquery'
 
 @autoinject()
 export class Register {

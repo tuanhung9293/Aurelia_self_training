@@ -12,10 +12,7 @@ import { User } from '../../utils/models/user';
 import {AuthenService} from '../../utils/authen.service';
 import {Router} from 'aurelia-router';
 import {DialogService} from 'aurelia-dialog';
-
 import {Notify} from '../notify/notify';
-
-import * as jQuery from 'jquery';
 
 @autoinject()
 export class Login {

@@ -1,0 +1,12 @@
+<template>
+  <label>
+    <select value.bind="inputSelected"
+      class="form-control"
+      change.delegate="selectChange()">
+      <option repeat.for="option of options"
+              model.bind="option.value">
+              ${option.value}
+      </option>
+    </select>
+  </label>
+</template>

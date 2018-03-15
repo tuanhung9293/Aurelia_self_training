@@ -8,8 +8,9 @@ export class EditTasklist {
   tasklist: Tasklist;
   rename: string;
 
-  constructor(private controller: DialogController,
-              private tasklistService: TasklistService) {
+  constructor(
+    private controller: DialogController,
+    private tasklistService: TasklistService) {
   }
 
   activate(tasklist) {
