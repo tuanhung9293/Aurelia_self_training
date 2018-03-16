@@ -13,7 +13,7 @@ import { start } from 'repl';
 
 @autoinject()
 export class TaskLists {
-  data!: Tasklist[];
+  data: Tasklist[] = [];
 
   numberRow: number;
   currentPageNumber: number = 1;
@@ -26,6 +26,9 @@ export class TaskLists {
     { id: 1, value: 10 },
     { id: 2, value: 20 },
   ];
+
+  pageStartIndex: number;
+  pageEndIndex: number;
 
   
   paginationArray: Array<{ value: string, disabled: boolean, active: boolean }> = [];
@@ -116,6 +119,8 @@ export class TaskLists {
       let startIndex = this.numberRow*(this.currentPageNumber-1);
       let endIndex = startIndex + this.numberRow;
       this.currentPages = this.data.slice(startIndex, endIndex);
+      this.pageStartIndex = (this.currentPageNumber - 1) * this.numberRow + 1;
+      this.pageEndIndex = this.currentPageNumber * this.numberRow < this.data.length ? this.currentPageNumber * this.numberRow : this.data.length;
       this.changePaginationArray();
     });
   }
@@ -154,68 +159,50 @@ export class TaskLists {
     this.getUsers();
   }
 
-  getUsers() {
-    this.userService.getUsers()
-      .then(data => this.users = data)
-      .catch(() => console.log('getUsers fail'))
+  public async getUsers() {
+    const users = await this.userService.getUsers();
+    this.users = users;
   }
 
-  getTasklists() {
-    this.tasklistService.getTasklists()
-      .then(
-        data => {
-          this.data = data;
-          console.log('Get tasklists success');
-          this.generalData.allTasklistOwner = this.data.length;
-
-          this.data.forEach((item) => {
-            this.generalData.allTodo += item.todo_count;
-            this.generalData.userShare += item.share_count;
-            this.generalData.allDone += item.done_count;
-            item.owner = true;
-            item.is_write = true;
-            item.access = 'Full Access';
-            item.user = this.userService.getCurrentUser();
-          });
-
-          this.getTasklistsAuthorized();
-        }
-      )
-      .catch((error) => console.log('getTasklists fail', error))
+  private setTasklists(tasklist) {
+    this.data = this.data.concat(tasklist);
+    this.generalData.allTasklistOwner = tasklist.length;
+    this.data.forEach((item) => {
+      this.generalData.allTodo += item.todo_count;
+      this.generalData.userShare += item.share_count;
+      this.generalData.allDone += item.done_count;
+      item.owner = true;
+      item.is_write = true;
+      item.access = 'Full Access';
+      item.user = this.userService.getCurrentUser();
+    }); 
   }
 
-  getTasklistsAuthorized() {
-    this.tasklistService.getTasklistsAuthorized()
-      .then(
-        data => {
-          data.forEach((item) => {
-            item.user = this.users.filter(h => h.id === item.user_id)[0].email;
-            item.access = item.is_write ? 'Edit Only' : 'Read Only';
-          });
-          this.data = this.data.concat(data);
-          console.log('getTasklistsAuthorized success');
-        }
-      )
-      .then(() => {
-        this.slicePage();
-      }
-    )
-      .catch(() => console.log('getTasklistsAuthorized fail'))
+  private setTasklistsAuthorized(tasklists) {
+    tasklists.forEach((item) => {
+      item.user = this.users.filter(h => h.id === item.user_id)[0].email;
+      item.access = item.is_write ? 'Edit Only' : 'Read Only';
+    });
+    this.data = this.data.concat(tasklists);
   }
 
-  getTasklist(tasklist_id: number) {
-    this.tasklistService.getTasklist(tasklist_id)
-      .then(
-        data => {
-          this.data.filter(h => h.id === tasklist_id)[0].name = data.name;
-          console.log(`Get tasklist ${tasklist_id} success`);
-        }
-      )
-      .catch(() => console.log(`Get tasklist ${tasklist_id} fail`)
-      )
+  async getTasklists() {
+    const [tasklist1, tasklist2] = await Promise.all([
+      this.tasklistService.getTasklists(),
+      this.tasklistService.getTasklistsAuthorized(),
+    ]);
+
+    this.setTasklists(tasklist1);
+    this.setTasklistsAuthorized(tasklist2);
+    this.slicePage();
   }
 
-  createTasklist() {
+  async getTasklist(tasklist_id: number) {
+    const tasklist = await this.tasklistService.getTasklist(tasklist_id);
+    this.data.filter(h => h.id === tasklist_id)[0].name = tasklist.name;
+  }
+
+  public createTasklist() {
     this.tasklistService.createTasklist(this.tasklistName)
       .then(
         response => {
@@ -242,7 +229,6 @@ export class TaskLists {
       .then(() => {
           this.data = this.data.filter(h => h.id !== id);
           this.generalData.allTasklistOwner--;
-          // this.generalData.userShare -= this.data.filter(h => h.id === id)[0].share_count;
         }
       )
       .catch((error) => {

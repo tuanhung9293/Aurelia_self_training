@@ -15,3 +15,6 @@ ux-dialog-header, ux-dialog-footer {
   background: #d6f6c5;
 }
 
+.pagination > .disabled {
+  pointer-events: none;
+}
