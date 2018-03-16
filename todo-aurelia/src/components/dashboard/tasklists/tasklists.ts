@@ -21,11 +21,25 @@ export class TaskLists {
   secondIndex: number | string;
   nearEndIndex: number | string;
   currentPages!: Tasklist[];
-  optionData = [
+
+  rowNumberOptions = [
     { id: 0, value: 5 },
     { id: 1, value: 10 },
     { id: 2, value: 20 },
   ];
+
+  tableTitles = [
+    { id: 0, additionClass: "text-center", sortField: "id", displayText: "ID" },
+    { id: 1, additionClass: "", sortField: "name", displayText: "List Name" },
+    { id: 2, additionClass: "", sortField: "user", displayText: "User" },
+    { id: 3, additionClass: "hidden-xs", sortField: "share_count", displayText: "Share" },
+    { id: 4, additionClass: "hidden-xs", sortField: "todo_count", displayText: "Todo" },
+    { id: 5, additionClass: "hidden-xs", sortField: "done_count", displayText: "Done" },
+    { id: 6, additionClass: "hidden-xs", sortField: "", displayText: "Access" },
+    { id: 7, additionClass: "text-center", sortField: "", displayText: "Actions" },
+  ]
+
+  public sortingInfo: { index: number, status: string } = { index: 1, status: 'sorting_asc' };
 
   pageStartIndex: number;
   pageEndIndex: number;
@@ -145,13 +159,20 @@ export class TaskLists {
     this.slicePage();
   }
 
-  sortData(field: string): void {
-    this.increase = - this.increase;
+  sortDataTable(id: number, field: string): void {
+    if (id != this.sortingInfo.index) { this.increase = 1; }
+    else {
+      this.increase = - this.increase;
+    }
+
     this.data.sort((a, b) => {
       if (a[field] > b[field]) return this.increase;
       if (a[field] < b[field]) return - this.increase;
     });
+
+    this.sortingInfo = { index: id, status: this.increase > 0 ? 'sorting_asc' : 'sorting_desc'};
     this.slicePage();
+    this.goToPage('1');
   }
 
   created() {

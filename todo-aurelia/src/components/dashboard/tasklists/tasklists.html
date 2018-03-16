@@ -53,24 +53,27 @@
     </div>
 
     <div class="block-content">
-      <input-select options.bind="optionData"
+      <input-select options.bind="rowNumberOptions"
         input-selected.bind="numberRow"
         select-change.call="slicePage()">
       </input-select>
     </div>
 
+    <!-- class.bind="${title.additionClass} ${title.id == sortingInfo.index ? 'sortingInfo.status' : 'sorting'}" -->
+
     <div class="block-content">
-      <table class="table table-bordered table-striped js-dataTable-full">
-        <tr>
-          <th class="text-center" click.delegate="sortData('id')">ID</th>
-          <th click.delegate="sortData('name')">List Name</th>
-          <th click.delegate="sortData('user')">User</th>
-          <th class="hidden-xs" click.delegate="sortData('share_count')">Share</th>
-          <th class="hidden-xs" click.delegate="sortData('todo_count')">Todo</th>
-          <th class="hidden-xs" click.delegate="sortData('done_count')">Done</th>
-          <th class="hidden-xs" style="width: 15%;">Access</th>
-          <th class="text-center" style="width: 10%;">Actions</th>
-        </tr>
+      <table class="table table-bordered table-striped dataTable">
+        <thead>
+          <tr>
+            <th repeat.for="title of tableTitles"
+              class="${title.additionClass}"
+              class.bind="title.id == sortingInfo.index ? sortingInfo.status : 'sorting'"
+              click.delegate="sortDataTable(title.id, title.sortField)">
+              ${title.displayText}
+            </th>
+          </tr>
+        </thead>
+
         <tr repeat.for="tasklist of currentPages">
           <td class="text-center">${tasklist.id}</td>
           <td class="font-w600">${tasklist.name}</td>
