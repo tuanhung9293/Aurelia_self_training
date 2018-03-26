@@ -1,5 +1,7 @@
 <template>
   <require from="./tasklists.css"></require>
+  <require from="./tasklist-element.html"></require>  
+
   <!-- Stats -->
   <div class="content bg-gray-lighter border-b">
     <div class="row items-push text-uppercase">
@@ -39,7 +41,7 @@
   <!-- Dynamic Table Full -->
   <div class="block">
     <div class="block-header row">
-      <h2 class="block-title col-sm-4" >Tasklist
+      <h2 class="block-title col-sm-4">Tasklist
         <small> Dashboard</small>
       </h2>
       <form class="col-md-4" submit.trigger="createTasklist()">
@@ -52,106 +54,10 @@
       </form>
     </div>
 
-    <div class="block-content">
-      <input-select options.bind="rowNumberOptions"
-        input-selected.bind="numberRow"
-        select-change.call="slicePage()">
-      </input-select>
-    </div>
-
-    <!-- class.bind="${title.additionClass} ${title.id == sortingInfo.index ? 'sortingInfo.status' : 'sorting'}" -->
-
-    <div class="block-content">
-      <table class="table table-bordered table-striped dataTable">
-        <thead>
-          <tr>
-            <th repeat.for="title of tableTitles"
-              class="${title.additionClass}"
-              class.bind="title.id == sortingInfo.index ? sortingInfo.status : 'sorting'"
-              click.delegate="sortDataTable(title.id, title.sortField)">
-              ${title.displayText}
-            </th>
-          </tr>
-        </thead>
-
-        <tr repeat.for="tasklist of currentPages">
-          <td class="text-center">${tasklist.id}</td>
-          <td class="font-w600">${tasklist.name}</td>
-          <td>${tasklist.user}</td>
-          <td class="hidden-xs">${tasklist.share_count}</td>
-          <td class="hidden-xs">${tasklist.todo_count}</td>
-          <td class="hidden-xs">${tasklist.done_count}</td>
-          <td class="hidden-xs">
-            <span class="label label-success ${tasklist.access === 'Edit Only' ? 'label-warning' : ''} ${tasklist.access === 'Read Only' ? 'label-danger' : ''}">${tasklist.access}</span>
-          </td>
-          <td class="text-center">
-            <div class="btn-group">
-              <button class="btn btn-xs btn-default"
-                type="button"
-                data-toggle="tooltip"
-                title="Edit Tasklist"
-                click.delegate="edit(tasklist)"
-                disabled.bind="!tasklist.owner">
-                <i class="fa fa-pencil"></i>
-              </button>
-              <button class="btn btn-xs btn-default"
-                type="button"
-                data-toggle="tooltip"
-                title="Share Tasklist"
-                click.delegate="share(tasklist)"
-                disabled.bind="!tasklist.owner">
-                <i class="fa fa-share"></i>
-              </button>
-              <button class="btn btn-xs btn-default"
-                type="button"
-                data-toggle="tooltip"
-                title="Remove Tasklist"
-                click.delegate="deleteTasklist(tasklist.id)"
-                disabled.bind="!tasklist.owner">
-                <i class="fa fa-times"></i>
-              </button>
-              <button class="btn btn-xs btn-default"
-                type="button"
-                data-toggle="tooltip"
-                title="Show Tasklist"
-                click.delegate="showDetail(tasklist)">
-                <i class="fa fa-list"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="row block-content">
-      <div class="col-sm-6">
-        <div class="dataTables_info" id="DataTables_Table_1_info" role="status" aria-live="polite">Showing
-          <strong>${pageStartIndex} </strong>-
-          <strong>${pageEndIndex} </strong> of
-          <strong>${data.length}</strong>
-        </div>
-      </div>
-      <div class="col-sm-6">
-        <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_1_paginate">
-          <ul class="pagination">
-            <li class="paginate_button previous ${currentPageNumber == 1 ? 'disabled' : ''}" aria-controls="DataTables_Table_1" click.delegate="previousPage()">
-              <a href="#">
-                <i class="fa fa-angle-left"></i>
-              </a>
-            </li>
-            <li repeat.for="item of paginationArray" class="paginate_button ${item.active ? 'active' : ''} ${item.disabled ? 'disabled' : ''}" click.delegate="goToPage(item.value)">
-              <a href="#">${item.value}</a>
-            </li>
-            <li class="paginate_button next ${currentPageNumber == maxPage ? 'disabled' : ''}" aria-controls="DataTables_Table_1" click.delegate="nextPage()">
-              <a href="#">
-                <i class="fa fa-angle-right"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-
+    <data-table row-number-options.bind="rowNumberOptions"
+      table-titles.bind="tableTitles"
+      table-contents.bind="tasklists"
+      view-model.ref="childViewModel">
+    </data-table>
   </div>
 </template>

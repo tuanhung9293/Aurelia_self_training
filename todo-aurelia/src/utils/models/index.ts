@@ -5,3 +5,4 @@ export * from './todo';
 export * from './authen';
 export { TodoSearch } from './todo-search';
 export { RegisterModel } from './register-model';
+export { TableTitle } from './table-title';

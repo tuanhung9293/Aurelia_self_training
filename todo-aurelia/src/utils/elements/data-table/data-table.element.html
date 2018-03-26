@@ -1,0 +1,61 @@
+<template>
+  <require from="./data-table.css"></require>
+
+  <!-- Select number of rows per page -->
+  <div class="block-content">
+    <input-select options.bind="rowNumberOptionsMap"
+      input-selected.bind="numberRow"
+      select-change.call="slicePage()">
+    </input-select>
+  </div>
+
+  <div class="block-content">
+    <table class="table table-bordered table-striped dataTable">
+      <thead>
+        <tr>
+          <th repeat.for="title of tableTitles"
+            class="${title.additionClass}"
+            class.bind="title.id == sortingInfo.index ? sortingInfo.status : 'sorting'"
+            click.delegate="sortDataTable(title.id, title.sortField)">
+            ${title.displayText}
+          </th>
+        </tr>
+      </thead>
+      <tr repeat.for="tasklist of currentPages"
+      as-element="compose"
+      view='../table-row/table-row.html'></tr>
+    </table>
+  </div>
+
+  <div class="row block-content">
+    <!-- Index of showing pages -->
+    <div class="col-sm-6">
+      <div class="dataTables_info" id="DataTables_Table_1_info" role="status" aria-live="polite">Showing
+        <strong>${pageStartIndex} </strong>-
+        <strong>${pageEndIndex} </strong> of
+        <strong>${tableContents.length}</strong>
+      </div>
+    </div>
+    <!-- Select pagination page -->
+    <div class="col-sm-6">
+      <div class="dataTables_paginate paging_simple_numbers">
+        <ul class="pagination">
+          <li class="paginate_button previous ${currentPageNumber == 1 ? 'disabled' : ''}" aria-controls="DataTables_Table_1" click.delegate="previousPage()">
+            <a href="#">
+              <i class="fa fa-angle-left"></i>
+            </a>
+          </li>
+          <li repeat.for="item of paginationArray" class="paginate_button ${item.active ? 'active' : ''} ${item.disabled ? 'disabled' : ''}" click.delegate="goToPage(item.value)">
+            <a href="#">${item.value}</a>
+          </li>
+          <li class="paginate_button next ${currentPageNumber == maxPage ? 'disabled' : ''}" aria-controls="DataTables_Table_1" click.delegate="nextPage()">
+            <a href="#">
+              <i class="fa fa-angle-right"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
