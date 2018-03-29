@@ -32,10 +32,9 @@ export class TasklistService {
 
   getTasklistsAuthorized() {
     return this.httpClient.get(PRODUCT.tasklistsAuthorizedPATH)
-      .then(
-        response => {
-          return JSON.parse(response.response);
-        })
+      .then(response => {
+        return JSON.parse(response.response);
+      })
       .catch(() => console.log('getTasklistsAuthorized got failure'));
   }
 

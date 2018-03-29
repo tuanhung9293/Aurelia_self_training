@@ -23,8 +23,12 @@ export async function configure(aurelia: Aurelia): Promise<void> {
     //   config.settings.lock = true;
     //   config.settings.centerHorizontalOnly = false;
     // })
+    
+    .plugin('aurelia-dialog')
     .plugin('aurelia-validation')
-    .feature(PLATFORM.moduleName('./utils/templates/index'));
+
+    .feature(PLATFORM.moduleName('./utils/templates/index'))
+    .feature(PLATFORM.moduleName('./utils/elements/index'));
 
   if (environment.debug) {
     aurelia.use.developmentLogging();
