@@ -1,6 +1,6 @@
 <template>
   <require from="./tasklists.css"></require>
-  <require from="./tasklist-element.html"></require>  
+  <!-- <require from="../../../utils/templates/table-loader/table-loader.html"></require> -->
 
   <!-- Stats -->
   <div class="content bg-gray-lighter border-b">
@@ -39,25 +39,28 @@
   <!-- END Stats -->
 
   <!-- Dynamic Table Full -->
-  <div class="block">
-    <div class="block-header row">
-      <h2 class="block-title col-sm-4">Tasklist
-        <small> Dashboard</small>
-      </h2>
-      <form class="col-md-4" submit.trigger="createTasklist()">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Tasklist name ..." value.bind="tasklistName">
-          <span class="input-group-btn">
-            <button class="btn btn-primary" type="submit" disabled.bind="tasklistName===''">Add <i class="fa fa-plus-square"></i></button>
-          </span>
-        </div>
-      </form>
+  <div class="block" style="position: relative">
+    <div>
+      <div class="block-header row">
+        <h2 class="block-title col-sm-4">Tasklist
+          <small> Dashboard</small>
+        </h2>
+        <form class="col-md-4" submit.trigger="createTasklist()">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Tasklist name ..." value.bind="tasklistName">
+            <span class="input-group-btn">
+              <button class="btn btn-primary" type="submit" disabled.bind="tasklistName===''">Add <i class="fa fa-plus-square"></i></button>
+            </span>
+          </div>
+        </form>
+      </div>
+      <data-table row-number-options.bind="rowNumberOptions"
+        table-titles.bind="tableTitles"
+        table-contents.bind="tasklists"
+        view-model.ref="childViewModel">
+      </data-table>
     </div>
-
-    <data-table row-number-options.bind="rowNumberOptions"
-      table-titles.bind="tableTitles"
-      table-contents.bind="tasklists"
-      view-model.ref="childViewModel">
-    </data-table>
+    <table-loader if.bind="loading"
+    percent.bind="percentLoading"></table-loader>  
   </div>
 </template>

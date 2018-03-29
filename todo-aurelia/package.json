@@ -19,6 +19,7 @@
     "datatables": "^1.10.13",
     "jquery": "^2.2.4",
     "jquery-validation": "^1.17.0",
+    "npm": "^5.8.0",
     "requirejs": "^2.3.2",
     "text": "github:requirejs/text#latest",
     "typescript": "^2.7.2"

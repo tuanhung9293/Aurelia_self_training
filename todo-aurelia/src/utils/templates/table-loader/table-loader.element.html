@@ -1,0 +1,10 @@
+<template>
+  <require from="./table-loader.element.css"></require>
+  <div class="table-loader">
+    <div class="table-loader-block progress active">
+      <div class="progress-bar progress-bar-success progress-bar-striped"
+      role="progressbar" aria-valuenow="90" aria-valuemin="0"
+      aria-valuemax="100" css="width: ${percent}%;">${percent}%</div>
+    </div>
+  </div>
+</template>

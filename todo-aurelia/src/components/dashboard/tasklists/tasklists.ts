@@ -2,11 +2,13 @@ import { TasklistService } from '../../../utils/services/tasklist.service'
 import { UserService } from '../../../utils/user.service'
 import { User, Tasklist, TableTitle } from '../../../utils/models'
 
-import { autoinject } from 'aurelia-framework';
+import { autoinject, factory } from 'aurelia-framework';
 
 @autoinject()
 export class TaskLists {
   tasklists: Tasklist[] = [];
+  public loading: boolean = false;
+  public percentLoading: number = 5;
 
   public childViewModel;
 
@@ -57,7 +59,7 @@ export class TaskLists {
       item.is_write = true;
       item.access = 'Full Access';
       item.user = this.userService.getCurrentUser();
-    }); 
+    });
   }
 
   private setTasklistsAuthorized(tasklists) {
@@ -69,11 +71,22 @@ export class TaskLists {
   }
 
   async getTasklists() {
+    this.loading = true;
+    let numberOfRequest = 2;
     const [tasklist1, tasklist2] = await Promise.all([
-      this.tasklistService.getTasklists(),
-      this.tasklistService.getTasklistsAuthorized(),
+      this.tasklistService.getTasklists()
+        .then(response => {
+          this.percentLoading += 95/numberOfRequest;
+          return response;
+        }),
+      this.tasklistService.getTasklistsAuthorized()
+        .then(response => {
+          this.percentLoading += 95/numberOfRequest;
+          return response;
+        }),
     ]);
 
+    setTimeout(() => { this.loading = false; }, 500);
     this.setTasklists(tasklist1);
     this.setTasklistsAuthorized(tasklist2);
     this.childViewModel.slicePage();
